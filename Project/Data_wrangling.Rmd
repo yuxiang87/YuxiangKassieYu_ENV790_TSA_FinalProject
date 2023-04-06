@@ -1,0 +1,231 @@
+---
+title: "Raw Data"
+author: "Yuxiang "
+output: pdf_document
+always_allow_html: true
+editor_options: 
+  chunk_output_type: console
+  markdown: 
+    wrap: sentence
+---
+#packages
+```{r packages}
+library(reshape2)
+library(readxl)
+library(lubridate)
+library(ggplot2)
+library(ggpubr)
+library(ggpmisc)
+library(reshape2)
+library(readr)
+library(tidyverse)
+library(here)
+library(cowplot)
+library(tseries)
+#install.packages("vegan")
+#install.packages("permute")
+#install.packages("lattice")
+library(permute)
+library(lattice)
+library(mgcv)
+library(vegan)
+#install.packages("relaimpo")
+library(relaimpo)
+library(zoo)
+#install.packages("magrittr")
+library(magrittr)
+library(knitr)
+library(dplyr)
+#install.packages("kableExtra")
+#install.packages("mgcv")
+```
+
+#phyto
+```{r}
+phyto <- read.csv( file = "./Data/Phyto_raw.csv")
+phyto$sampledate <- ymd(phyto$sampledate)
+```
+
+## infomation
+###site_observation
+```{r echo=FALSE}
+rawdata <- phyto
+site_date_info <- rawdata %>%
+  group_by(lakeid) %>%
+  summarize(Observation_Count = n_distinct(sampledate)) %>%
+  arrange(desc(Observation_Count))
+site_date_info
+
+kable(site_date_info, col.names = c("Site", "Observation Date Count"), caption = "Site Information")
+
+```
+
+###Division level Total Biomass
+```{r echo=FALSE}
+biomass_Division <- rawdata %>% group_by(division) %>% 
+  mutate(Count = n()) %>% 
+summarize('Count' = first(Count),'Total_Biomass' = sum(biomass_conc),'Max_Biomass' = max(biomass_conc, na.rm = TRUE),'Min_Biomass' = min(biomass_conc, na.rm = TRUE),'Mean_Biomass' = mean(biomass_conc, na.rm = TRUE))  %>% arrange(desc(Total_Biomass))
+
+kable(biomass_Division, 
+      col.names = c("Genus","Count", "Total Biomass", "Max Biomass", "Min Biomass", "Mean Biomass"),
+      caption = "Division level Total Biomass (\\textit{mg/L})")
+```
+
+###Genus level Total Biomass
+```{r echo=FALSE}
+rawdata$genus[rawdata$genus == ""] <- "NA"
+biomass_Genus <- rawdata %>%  group_by(genus) %>% mutate(Count = n()) %>% 
+summarize('Count' = first(Count),'Total_Biomass' = sum(biomass_conc),'Max_Biomass' = max(biomass_conc, na.rm = TRUE),'Min_Biomass' = min(biomass_conc, na.rm = TRUE),'Mean_Biomass' = mean(biomass_conc, na.rm = TRUE))  %>% arrange(desc(Total_Biomass))
+
+unique_Genus_info <- rawdata[,c("division", "genus")] %>% distinct() %>% filter(!is.na(genus)) %>% add_row(division = "ALL", genus = NA)
+
+biomass_Genus_result <- unique_Genus_info %>% 
+  left_join(biomass_Genus, by = "genus") %>% arrange(desc(Total_Biomass))
+
+Table_biomass_Genus <- biomass_Genus_result[c(1:10),]
+kable(Table_biomass_Genus, 
+      col.names = c("Division","Genus","Count", "Total Biomass", "Max Biomass", "Min Biomass", "Mean Biomass"),
+      caption = "Genus level Total Biomass (\\textit{mg/L})")
+```
+
+## Data
+```{r}
+biomass_D <- rawdata[,c(1,3,5,6,15,13)]%>% 
+  group_by(lakeid, sampledate,depth_range, division) %>% summarize(total_biomass = sum(biomass_conc))
+
+biomass_G <- rawdata[,c(1,3,5,6,15,13)]%>% filter( division == "Cyanophyta") %>% 
+  group_by(lakeid, sampledate,depth_range, genus) %>% summarize(total_biomass = sum(biomass_conc))
+
+biomass_cyan <- biomass_D %>% filter(division == "Cyanophyta")
+#ME lake
+cyan_ME <- filter(biomass_cyan, lakeid == "ME")
+unique(cyan_ME$depth_range)
+
+
+common_dates <- cyan_ME[, c(2,3)]  %>% 
+  filter(depth_range == "0-8m") %>% 
+  inner_join(cyan_ME[, c(2,3)] %>% filter(depth_range == "0-2m"), by = "sampledate")
+
+common_dates
+## 2 depth range in different day
+```
+
+#Physical
+```{r}
+physical <- read.csv( file = "./Data/Physical_raw.csv")
+physical$sampledate <- ymd(physical$sampledate)
+
+```
+###site_observation
+```{r echo=FALSE}
+rawdata <- physical
+site_date_info <- rawdata %>%
+  group_by(lakeid) %>%
+  summarize(Observation_Count = n_distinct(sampledate)) %>%
+  arrange(desc(Observation_Count))
+site_date_info
+
+kable(site_date_info, col.names = c("Site", "Observation Date Count"), caption = "Site Information")
+```
+##Data
+```{r}
+physical_ME_08 <- rawdata[,c(1,4,5,7,8,9,10,11)]%>% 
+  filter(depth %in% c(0:8)) %>% 
+  filter(lakeid =="ME") %>% group_by(sampledate) %>% summarize(Temperature = mean(wtemp), o2 = mean(o2), o2sat = mean(o2sat)) %>% mutate(depth_range = "0-8m")
+
+physical_ME_02 <- rawdata[,c(1,4,5,7,8,9,10,11)]%>% 
+  filter(depth %in% c(0:2)) %>% 
+  filter(lakeid =="ME") %>% group_by(sampledate) %>% summarize(Temperature = mean(wtemp), o2 = mean(o2), o2sat = mean(o2sat)) %>% mutate(depth_range = "0-2m")
+
+physical_ME_combined <- rbind(physical_ME_08, physical_ME_02)
+
+cyan_physical_ME <- cyan_ME %>%
+  left_join(physical_ME_combined, by = c("sampledate", "depth_range"))
+
+
+```
+
+#Chemical
+```{r}
+chemical <- read.csv( file = "./Data/Chemical_raw.csv")
+chemical$sampledate <- ymd(chemical$sampledate)
+```
+
+##Data wangling
+```{r}
+#08
+rawdata <- chemical
+chemical_ME_08_ph <- rawdata%>% 
+  filter(depth %in% c(0:8)) %>%
+  filter(lakeid == "ME") %>%
+  filter(!is.na(ph)) %>% # 
+  group_by(sampledate) %>%
+  summarize(ph = mean(ph, na.rm = TRUE)) %>% mutate(depth_range = "0-8m")
+
+
+chemical_ME_08_totnf <- rawdata%>% 
+  filter(depth %in% c(0:8)) %>%
+  filter(lakeid == "ME") %>%
+  filter(!is.na(totnf)) %>% # 
+  group_by(sampledate) %>%
+  summarize(totnf = mean(totnf, na.rm = TRUE)) %>% mutate(depth_range = "0-8m")
+ 
+  
+chemical_ME_08_dic <- rawdata%>% 
+  filter(depth %in% c(0:8)) %>%
+  filter(lakeid == "ME") %>%
+  filter(!is.na(dic)) %>% # 
+  group_by(sampledate) %>%
+  summarize(dic = mean(dic, na.rm = TRUE))  %>% mutate(depth_range = "0-8m")
+
+
+#02  
+ chemical_ME_02_ph <- rawdata%>% 
+  filter(depth %in% c(0:2)) %>%
+  filter(lakeid == "ME") %>%
+  filter(!is.na(ph)) %>% # 
+  group_by(sampledate) %>%
+  summarize(ph = mean(ph, na.rm = TRUE)) %>% mutate(depth_range = "0-2m")
+
+chemical_ME_02_totnf <- rawdata%>% 
+  filter(depth %in% c(0:2)) %>%
+  filter(lakeid == "ME") %>%
+  filter(!is.na(totnf)) %>% # 
+  group_by(sampledate) %>%
+  summarize(totnf = mean(totnf, na.rm = TRUE))   %>% mutate(depth_range = "0-2m")
+  
+chemical_ME_02_dic <- rawdata%>% 
+  filter(depth %in% c(0:2)) %>%
+  filter(lakeid == "ME") %>%
+  filter(!is.na(dic)) %>% # 
+  group_by(sampledate) %>%
+  summarize(dic = mean(dic, na.rm = TRUE))   %>% mutate(depth_range = "0-2m")
+
+#ph
+chemical_ME_combined_ph <- rbind(chemical_ME_02_ph, chemical_ME_08_ph)
+ME_raw1 <- cyan_physical_ME %>%
+  left_join(chemical_ME_combined_ph, by = c("sampledate", "depth_range")) 
+
+#totnf
+chemical_ME_combined_totnf <- rbind(chemical_ME_02_totnf, chemical_ME_08_totnf)
+ME_raw2 <- ME_raw1 %>%
+  left_join(chemical_ME_combined_totnf, by = c("sampledate", "depth_range")) 
+  
+#dic
+chemical_ME_combined_dic <- rbind(chemical_ME_02_dic, chemical_ME_08_dic)
+ME_raw <- ME_raw2 %>%
+  left_join(chemical_ME_combined_dic, by = c("sampledate", "depth_range")) 
+
+                                                              
+```
+
+#final raw data
+
+```{r}
+ME_rawME_dayI <- ME_raw %>%
+  ungroup() %>% 
+  arrange(sampledate) %>% 
+  mutate(date_diff = as.numeric(difftime(sampledate, lag(sampledate), units = "days")))
+
+```
+

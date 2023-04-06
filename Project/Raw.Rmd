@@ -1,0 +1,387 @@
+---
+title: "Raw Data"
+author: "Yuxiang "
+output: pdf_document
+always_allow_html: true
+editor_options: 
+  chunk_output_type: console
+  markdown: 
+    wrap: sentence
+---
+
+#packages
+```{r}
+
+```
+
+
+#North Temperate Lakes LTER: Chemical Limnology of Primary Study Lakes: Nutrients, pH and Carbon 1981 - current
+
+```{r Chemical}
+# Package ID: knb-lter-ntl.1.59 Cataloging System:https://pasta.edirepository.org.
+# Data set title: North Temperate Lakes LTER: Chemical Limnology of Primary Study Lakes: Nutrients, pH and Carbon 1981 - current.
+# Data set creator:  John Magnuson - University of Wisconsin-Madison 
+# Data set creator:  Stephen Carpenter - University of Wisconsin-Madison 
+# Data set creator:  Emily Stanley - University of Wisconsin-Madison 
+# Metadata Provider:  NTL Information Manager - University of Wisconsin-Madison 
+# Contact:    -  NTL LTER  - ntl.infomgr@gmail.com
+# Stylesheet v2.11 for metadata conversion into program: John H. Porter, Univ. Virginia, jporter@virginia.edu 
+
+inUrl1  <- "https://pasta.lternet.edu/package/data/eml/knb-lter-ntl/1/59/0ff1fd13116d6097376e3745194cdc5f" 
+infile1 <- tempfile()
+try(download.file(inUrl1,infile1,method="curl"))
+if (is.na(file.size(infile1))) download.file(inUrl1,infile1,method="auto")
+
+                   
+ dt1 <-read.csv(infile1,header=F 
+          ,skip=1
+            ,sep=","  
+                ,quot='"' 
+        , col.names=c(
+                    "lakeid",     
+                    "year4",     
+                    "daynum",     
+                    "sampledate",     
+                    "depth",     
+                    "rep",     
+                    "sta",     
+                    "event",     
+                    "ph",     
+                    "phair",     
+                    "alk",     
+                    "dic",     
+                    "tic",     
+                    "doc",     
+                    "toc",     
+                    "no3no2",     
+                    "no2",     
+                    "nh4",     
+                    "totnf",     
+                    "totnuf",     
+                    "totpf",     
+                    "totpuf",     
+                    "drsif",     
+                    "brsif",     
+                    "brsiuf",     
+                    "tpm",     
+                    "totnuf_sloh",     
+                    "no3no2_sloh",     
+                    "nh4_sloh",     
+                    "kjdl_n_sloh",     
+                    "totpuf_sloh",     
+                    "drp_sloh",     
+                    "drsif_sloh",     
+                    "flagdepth",     
+                    "flagph",     
+                    "flagphair",     
+                    "flagalk",     
+                    "flagdic",     
+                    "flagtic",     
+                    "flagdoc",     
+                    "flagtoc",     
+                    "flagno3no2",     
+                    "flagno2",     
+                    "flagnh4",     
+                    "flagtotnf",     
+                    "flagtotnuf",     
+                    "flagtotpf",     
+                    "flagtotpuf",     
+                    "flagdrsif",     
+                    "flagbrsif",     
+                    "flagbrsiuf",     
+                    "flagtpm",     
+                    "flagtotnuf_sloh",     
+                    "flagno3no2_sloh",     
+                    "flagnh4_sloh",     
+                    "flagkjdl_n_sloh",     
+                    "flagtotpuf_sloh",     
+                    "flagdrp_sloh",     
+                    "flagdrsif_sloh"    ), check.names=TRUE)
+               
+unlink(infile1)
+		    
+# Fix any interval or ratio columns mistakenly read in as nominal and nominal columns read as numeric or dates read as strings
+                
+if (class(dt1$lakeid)!="factor") dt1$lakeid<- as.factor(dt1$lakeid)
+if (class(dt1$year4)=="factor") dt1$year4 <-as.numeric(levels(dt1$year4))[as.integer(dt1$year4) ]               
+if (class(dt1$year4)=="character") dt1$year4 <-as.numeric(dt1$year4)
+if (class(dt1$daynum)=="factor") dt1$daynum <-as.numeric(levels(dt1$daynum))[as.integer(dt1$daynum) ]               
+if (class(dt1$daynum)=="character") dt1$daynum <-as.numeric(dt1$daynum)                                   
+# attempting to convert dt1$sampledate dateTime string to R date structure (date or POSIXct)                                
+tmpDateFormat<-"%Y-%m-%d"
+tmp1sampledate<-as.Date(dt1$sampledate,format=tmpDateFormat)
+# Keep the new dates only if they all converted correctly
+if(length(tmp1sampledate) == length(tmp1sampledate[!is.na(tmp1sampledate)])){dt1$sampledate <- tmp1sampledate } else {print("Date conversion failed for dt1$sampledate. Please inspect the data and do the date conversion yourself.")}                                                                    
+rm(tmpDateFormat,tmp1sampledate) 
+if (class(dt1$depth)=="factor") dt1$depth <-as.numeric(levels(dt1$depth))[as.integer(dt1$depth) ]               
+if (class(dt1$depth)=="character") dt1$depth <-as.numeric(dt1$depth)
+if (class(dt1$rep)!="factor") dt1$rep<- as.factor(dt1$rep)
+if (class(dt1$sta)!="factor") dt1$sta<- as.factor(dt1$sta)
+if (class(dt1$event)!="factor") dt1$event<- as.factor(dt1$event)
+if (class(dt1$ph)=="factor") dt1$ph <-as.numeric(levels(dt1$ph))[as.integer(dt1$ph) ]               
+if (class(dt1$ph)=="character") dt1$ph <-as.numeric(dt1$ph)
+if (class(dt1$phair)=="factor") dt1$phair <-as.numeric(levels(dt1$phair))[as.integer(dt1$phair) ]               
+if (class(dt1$phair)=="character") dt1$phair <-as.numeric(dt1$phair)
+if (class(dt1$alk)=="factor") dt1$alk <-as.numeric(levels(dt1$alk))[as.integer(dt1$alk) ]               
+if (class(dt1$alk)=="character") dt1$alk <-as.numeric(dt1$alk)
+if (class(dt1$dic)=="factor") dt1$dic <-as.numeric(levels(dt1$dic))[as.integer(dt1$dic) ]               
+if (class(dt1$dic)=="character") dt1$dic <-as.numeric(dt1$dic)
+if (class(dt1$tic)=="factor") dt1$tic <-as.numeric(levels(dt1$tic))[as.integer(dt1$tic) ]               
+if (class(dt1$tic)=="character") dt1$tic <-as.numeric(dt1$tic)
+if (class(dt1$doc)=="factor") dt1$doc <-as.numeric(levels(dt1$doc))[as.integer(dt1$doc) ]               
+if (class(dt1$doc)=="character") dt1$doc <-as.numeric(dt1$doc)
+if (class(dt1$toc)=="factor") dt1$toc <-as.numeric(levels(dt1$toc))[as.integer(dt1$toc) ]               
+if (class(dt1$toc)=="character") dt1$toc <-as.numeric(dt1$toc)
+if (class(dt1$no3no2)=="factor") dt1$no3no2 <-as.numeric(levels(dt1$no3no2))[as.integer(dt1$no3no2) ]               
+if (class(dt1$no3no2)=="character") dt1$no3no2 <-as.numeric(dt1$no3no2)
+if (class(dt1$no2)=="factor") dt1$no2 <-as.numeric(levels(dt1$no2))[as.integer(dt1$no2) ]               
+if (class(dt1$no2)=="character") dt1$no2 <-as.numeric(dt1$no2)
+if (class(dt1$nh4)=="factor") dt1$nh4 <-as.numeric(levels(dt1$nh4))[as.integer(dt1$nh4) ]               
+if (class(dt1$nh4)=="character") dt1$nh4 <-as.numeric(dt1$nh4)
+if (class(dt1$totnf)=="factor") dt1$totnf <-as.numeric(levels(dt1$totnf))[as.integer(dt1$totnf) ]               
+if (class(dt1$totnf)=="character") dt1$totnf <-as.numeric(dt1$totnf)
+if (class(dt1$totnuf)=="factor") dt1$totnuf <-as.numeric(levels(dt1$totnuf))[as.integer(dt1$totnuf) ]               
+if (class(dt1$totnuf)=="character") dt1$totnuf <-as.numeric(dt1$totnuf)
+if (class(dt1$totpf)=="factor") dt1$totpf <-as.numeric(levels(dt1$totpf))[as.integer(dt1$totpf) ]               
+if (class(dt1$totpf)=="character") dt1$totpf <-as.numeric(dt1$totpf)
+if (class(dt1$totpuf)=="factor") dt1$totpuf <-as.numeric(levels(dt1$totpuf))[as.integer(dt1$totpuf) ]               
+if (class(dt1$totpuf)=="character") dt1$totpuf <-as.numeric(dt1$totpuf)
+if (class(dt1$drsif)=="factor") dt1$drsif <-as.numeric(levels(dt1$drsif))[as.integer(dt1$drsif) ]               
+if (class(dt1$drsif)=="character") dt1$drsif <-as.numeric(dt1$drsif)
+if (class(dt1$brsif)=="factor") dt1$brsif <-as.numeric(levels(dt1$brsif))[as.integer(dt1$brsif) ]               
+if (class(dt1$brsif)=="character") dt1$brsif <-as.numeric(dt1$brsif)
+if (class(dt1$brsiuf)=="factor") dt1$brsiuf <-as.numeric(levels(dt1$brsiuf))[as.integer(dt1$brsiuf) ]               
+if (class(dt1$brsiuf)=="character") dt1$brsiuf <-as.numeric(dt1$brsiuf)
+if (class(dt1$tpm)=="factor") dt1$tpm <-as.numeric(levels(dt1$tpm))[as.integer(dt1$tpm) ]               
+if (class(dt1$tpm)=="character") dt1$tpm <-as.numeric(dt1$tpm)
+if (class(dt1$totnuf_sloh)=="factor") dt1$totnuf_sloh <-as.numeric(levels(dt1$totnuf_sloh))[as.integer(dt1$totnuf_sloh) ]               
+if (class(dt1$totnuf_sloh)=="character") dt1$totnuf_sloh <-as.numeric(dt1$totnuf_sloh)
+if (class(dt1$no3no2_sloh)=="factor") dt1$no3no2_sloh <-as.numeric(levels(dt1$no3no2_sloh))[as.integer(dt1$no3no2_sloh) ]               
+if (class(dt1$no3no2_sloh)=="character") dt1$no3no2_sloh <-as.numeric(dt1$no3no2_sloh)
+if (class(dt1$nh4_sloh)=="factor") dt1$nh4_sloh <-as.numeric(levels(dt1$nh4_sloh))[as.integer(dt1$nh4_sloh) ]               
+if (class(dt1$nh4_sloh)=="character") dt1$nh4_sloh <-as.numeric(dt1$nh4_sloh)
+if (class(dt1$kjdl_n_sloh)=="factor") dt1$kjdl_n_sloh <-as.numeric(levels(dt1$kjdl_n_sloh))[as.integer(dt1$kjdl_n_sloh) ]               
+if (class(dt1$kjdl_n_sloh)=="character") dt1$kjdl_n_sloh <-as.numeric(dt1$kjdl_n_sloh)
+if (class(dt1$totpuf_sloh)=="factor") dt1$totpuf_sloh <-as.numeric(levels(dt1$totpuf_sloh))[as.integer(dt1$totpuf_sloh) ]               
+if (class(dt1$totpuf_sloh)=="character") dt1$totpuf_sloh <-as.numeric(dt1$totpuf_sloh)
+if (class(dt1$drp_sloh)=="factor") dt1$drp_sloh <-as.numeric(levels(dt1$drp_sloh))[as.integer(dt1$drp_sloh) ]               
+if (class(dt1$drp_sloh)=="character") dt1$drp_sloh <-as.numeric(dt1$drp_sloh)
+if (class(dt1$drsif_sloh)=="factor") dt1$drsif_sloh <-as.numeric(levels(dt1$drsif_sloh))[as.integer(dt1$drsif_sloh) ]               
+if (class(dt1$drsif_sloh)=="character") dt1$drsif_sloh <-as.numeric(dt1$drsif_sloh)
+if (class(dt1$flagdepth)!="factor") dt1$flagdepth<- as.factor(dt1$flagdepth)
+if (class(dt1$flagph)!="factor") dt1$flagph<- as.factor(dt1$flagph)
+if (class(dt1$flagphair)!="factor") dt1$flagphair<- as.factor(dt1$flagphair)
+if (class(dt1$flagalk)!="factor") dt1$flagalk<- as.factor(dt1$flagalk)
+if (class(dt1$flagdic)!="factor") dt1$flagdic<- as.factor(dt1$flagdic)
+if (class(dt1$flagtic)!="factor") dt1$flagtic<- as.factor(dt1$flagtic)
+if (class(dt1$flagdoc)!="factor") dt1$flagdoc<- as.factor(dt1$flagdoc)
+if (class(dt1$flagtoc)!="factor") dt1$flagtoc<- as.factor(dt1$flagtoc)
+if (class(dt1$flagno3no2)!="factor") dt1$flagno3no2<- as.factor(dt1$flagno3no2)
+if (class(dt1$flagno2)!="factor") dt1$flagno2<- as.factor(dt1$flagno2)
+if (class(dt1$flagnh4)!="factor") dt1$flagnh4<- as.factor(dt1$flagnh4)
+if (class(dt1$flagtotnf)!="factor") dt1$flagtotnf<- as.factor(dt1$flagtotnf)
+if (class(dt1$flagtotnuf)!="factor") dt1$flagtotnuf<- as.factor(dt1$flagtotnuf)
+if (class(dt1$flagtotpf)!="factor") dt1$flagtotpf<- as.factor(dt1$flagtotpf)
+if (class(dt1$flagtotpuf)!="factor") dt1$flagtotpuf<- as.factor(dt1$flagtotpuf)
+if (class(dt1$flagdrsif)!="factor") dt1$flagdrsif<- as.factor(dt1$flagdrsif)
+if (class(dt1$flagbrsif)!="factor") dt1$flagbrsif<- as.factor(dt1$flagbrsif)
+if (class(dt1$flagbrsiuf)!="factor") dt1$flagbrsiuf<- as.factor(dt1$flagbrsiuf)
+if (class(dt1$flagtpm)!="factor") dt1$flagtpm<- as.factor(dt1$flagtpm)
+if (class(dt1$flagtotnuf_sloh)!="factor") dt1$flagtotnuf_sloh<- as.factor(dt1$flagtotnuf_sloh)
+if (class(dt1$flagno3no2_sloh)!="factor") dt1$flagno3no2_sloh<- as.factor(dt1$flagno3no2_sloh)
+if (class(dt1$flagnh4_sloh)!="factor") dt1$flagnh4_sloh<- as.factor(dt1$flagnh4_sloh)
+if (class(dt1$flagkjdl_n_sloh)!="factor") dt1$flagkjdl_n_sloh<- as.factor(dt1$flagkjdl_n_sloh)
+if (class(dt1$flagtotpuf_sloh)!="factor") dt1$flagtotpuf_sloh<- as.factor(dt1$flagtotpuf_sloh)
+if (class(dt1$flagdrp_sloh)!="factor") dt1$flagdrp_sloh<- as.factor(dt1$flagdrp_sloh)
+if (class(dt1$flagdrsif_sloh)!="factor") dt1$flagdrsif_sloh<- as.factor(dt1$flagdrsif_sloh)
+                
+# Convert Missing Values to NA for non-dates
+                
+
+
+# Here is the structure of the input data frame:
+str(dt1)                            
+
+Chemical <- dt1                            
+write.csv(Chemical, row.names = FALSE, 
+          file = "./Data/Chemical_raw.csv")
+
+```
+
+#North Temperate Lakes LTER: Physical Limnology of Primary Study Lakes 1981 - current
+
+```{r}
+# Package ID: knb-lter-ntl.29.30 Cataloging System:https://pasta.edirepository.org.
+# Data set title: North Temperate Lakes LTER: Physical Limnology of Primary Study Lakes 1981 - current.
+# Data set creator:  John Magnuson - University of Wisconsin 
+# Data set creator:  Stephen Carpenter - University of Wisconsin 
+# Data set creator:  Emily Stanley - University of Wisconsin 
+# Contact:  NTL Information Manager -  University of Wisconsin  - ntl.infomgr@gmail.com
+# Stylesheet v2.11 for metadata conversion into program: John H. Porter, Univ. Virginia, jporter@virginia.edu 
+
+inUrl1  <- "https://pasta.lternet.edu/package/data/eml/knb-lter-ntl/29/30/03e232a1b362900e0f059859abe8eb97" 
+infile1 <- tempfile()
+try(download.file(inUrl1,infile1,method="curl"))
+if (is.na(file.size(infile1))) download.file(inUrl1,infile1,method="auto")
+
+                   
+ dt1 <-read.csv(infile1,header=F 
+          ,skip=1
+            ,sep=","  
+                ,quot='"' 
+        , col.names=c(
+                    "lakeid",     
+                    "year4",     
+                    "daynum",     
+                    "sampledate",     
+                    "depth",     
+                    "rep",     
+                    "sta",     
+                    "event",     
+                    "wtemp",     
+                    "o2",     
+                    "o2sat",     
+                    "deck",     
+                    "light",     
+                    "frlight",     
+                    "flagdepth",     
+                    "flagwtemp",     
+                    "flago2",     
+                    "flago2sat",     
+                    "flagdeck",     
+                    "flaglight",     
+                    "flagfrlight"    ), check.names=TRUE)
+               
+unlink(infile1)
+		    
+# Fix any interval or ratio columns mistakenly read in as nominal and nominal columns read as numeric or dates read as strings
+                
+if (class(dt1$lakeid)!="factor") dt1$lakeid<- as.factor(dt1$lakeid)
+if (class(dt1$year4)=="factor") dt1$year4 <-as.numeric(levels(dt1$year4))[as.integer(dt1$year4) ]               
+if (class(dt1$year4)=="character") dt1$year4 <-as.numeric(dt1$year4)
+if (class(dt1$daynum)=="factor") dt1$daynum <-as.numeric(levels(dt1$daynum))[as.integer(dt1$daynum) ]               
+if (class(dt1$daynum)=="character") dt1$daynum <-as.numeric(dt1$daynum)                                   
+# attempting to convert dt1$sampledate dateTime string to R date structure (date or POSIXct)                                
+tmpDateFormat<-"%Y-%m-%d"
+tmp1sampledate<-as.Date(dt1$sampledate,format=tmpDateFormat)
+# Keep the new dates only if they all converted correctly
+if(length(tmp1sampledate) == length(tmp1sampledate[!is.na(tmp1sampledate)])){dt1$sampledate <- tmp1sampledate } else {print("Date conversion failed for dt1$sampledate. Please inspect the data and do the date conversion yourself.")}                                                                    
+rm(tmpDateFormat,tmp1sampledate) 
+if (class(dt1$depth)=="factor") dt1$depth <-as.numeric(levels(dt1$depth))[as.integer(dt1$depth) ]               
+if (class(dt1$depth)=="character") dt1$depth <-as.numeric(dt1$depth)
+if (class(dt1$rep)!="factor") dt1$rep<- as.factor(dt1$rep)
+if (class(dt1$sta)!="factor") dt1$sta<- as.factor(dt1$sta)
+if (class(dt1$event)!="factor") dt1$event<- as.factor(dt1$event)
+if (class(dt1$wtemp)=="factor") dt1$wtemp <-as.numeric(levels(dt1$wtemp))[as.integer(dt1$wtemp) ]               
+if (class(dt1$wtemp)=="character") dt1$wtemp <-as.numeric(dt1$wtemp)
+if (class(dt1$o2)=="factor") dt1$o2 <-as.numeric(levels(dt1$o2))[as.integer(dt1$o2) ]               
+if (class(dt1$o2)=="character") dt1$o2 <-as.numeric(dt1$o2)
+if (class(dt1$o2sat)=="factor") dt1$o2sat <-as.numeric(levels(dt1$o2sat))[as.integer(dt1$o2sat) ]               
+if (class(dt1$o2sat)=="character") dt1$o2sat <-as.numeric(dt1$o2sat)
+if (class(dt1$deck)=="factor") dt1$deck <-as.numeric(levels(dt1$deck))[as.integer(dt1$deck) ]               
+if (class(dt1$deck)=="character") dt1$deck <-as.numeric(dt1$deck)
+if (class(dt1$light)=="factor") dt1$light <-as.numeric(levels(dt1$light))[as.integer(dt1$light) ]               
+if (class(dt1$light)=="character") dt1$light <-as.numeric(dt1$light)
+if (class(dt1$frlight)!="factor") dt1$frlight<- as.factor(dt1$frlight)
+if (class(dt1$flagdepth)!="factor") dt1$flagdepth<- as.factor(dt1$flagdepth)
+if (class(dt1$flagwtemp)!="factor") dt1$flagwtemp<- as.factor(dt1$flagwtemp)
+if (class(dt1$flago2)!="factor") dt1$flago2<- as.factor(dt1$flago2)
+if (class(dt1$flago2sat)!="factor") dt1$flago2sat<- as.factor(dt1$flago2sat)
+if (class(dt1$flagdeck)!="factor") dt1$flagdeck<- as.factor(dt1$flagdeck)
+if (class(dt1$flaglight)!="factor") dt1$flaglight<- as.factor(dt1$flaglight)
+if (class(dt1$flagfrlight)!="factor") dt1$flagfrlight<- as.factor(dt1$flagfrlight)
+                
+# Convert Missing Values to NA for non-dates
+                
+
+
+# Here is the structure of the input data frame:
+str(dt1) 
+Physical <-dt1 
+write.csv(Physical, row.names = FALSE, 
+          file = "./Data/Physical_raw.csv")
+
+```
+
+#North Temperate Lakes LTER: Phytoplankton - Madison Lakes Area 1995 - current
+
+```{r}
+# Package ID: knb-lter-ntl.88.31 Cataloging System:https://pasta.edirepository.org.
+# Data set title: North Temperate Lakes LTER: Phytoplankton - Madison Lakes Area 1995 - current.
+# Data set creator:  John Magnuson - University of Wisconsin 
+# Data set creator:  Stephen Carpenter - University of Wisconsin 
+# Data set creator:  Emily Stanley - University of Wisconsin 
+# Contact:    -  NTL LTER  - ntl.infomgr@gmail.com
+# Stylesheet v2.11 for metadata conversion into program: John H. Porter, Univ. Virginia, jporter@virginia.edu 
+
+inUrl1  <- "https://pasta.lternet.edu/package/data/eml/knb-lter-ntl/88/31/f2de15b2fff6ae962a04c150c0a1c510" 
+infile1 <- tempfile()
+try(download.file(inUrl1,infile1,method="curl"))
+if (is.na(file.size(infile1))) download.file(inUrl1,infile1,method="auto")
+
+                   
+ dt1 <-read.csv(infile1,header=F 
+          ,skip=1
+            ,sep=","  
+                ,quot='"' 
+        , col.names=c(
+                    "lakeid",     
+                    "year4",     
+                    "sampledate",     
+                    "sta",     
+                    "depth_range",     
+                    "division",     
+                    "taxa_name",     
+                    "gald",     
+                    "cells_per_nu",     
+                    "nu_per_ml",     
+                    "cells_per_ml",     
+                    "biovolume_conc",     
+                    "biomass_conc",     
+                    "relative_total_biovolume",     
+                    "genus"    ), check.names=TRUE)
+               
+unlink(infile1)
+		    
+# Fix any interval or ratio columns mistakenly read in as nominal and nominal columns read as numeric or dates read as strings
+                
+if (class(dt1$lakeid)!="factor") dt1$lakeid<- as.factor(dt1$lakeid)
+if (class(dt1$year4)=="factor") dt1$year4 <-as.numeric(levels(dt1$year4))[as.integer(dt1$year4) ]               
+if (class(dt1$year4)=="character") dt1$year4 <-as.numeric(dt1$year4)                                   
+# attempting to convert dt1$sampledate dateTime string to R date structure (date or POSIXct)                                
+tmpDateFormat<-"%Y-%m-%d"
+tmp1sampledate<-as.Date(dt1$sampledate,format=tmpDateFormat)
+# Keep the new dates only if they all converted correctly
+if(length(tmp1sampledate) == length(tmp1sampledate[!is.na(tmp1sampledate)])){dt1$sampledate <- tmp1sampledate } else {print("Date conversion failed for dt1$sampledate. Please inspect the data and do the date conversion yourself.")}                                                                    
+rm(tmpDateFormat,tmp1sampledate) 
+if (class(dt1$sta)!="factor") dt1$sta<- as.factor(dt1$sta)
+if (class(dt1$depth_range)!="factor") dt1$depth_range<- as.factor(dt1$depth_range)
+if (class(dt1$division)!="factor") dt1$division<- as.factor(dt1$division)
+if (class(dt1$taxa_name)!="factor") dt1$taxa_name<- as.factor(dt1$taxa_name)
+if (class(dt1$gald)=="factor") dt1$gald <-as.numeric(levels(dt1$gald))[as.integer(dt1$gald) ]               
+if (class(dt1$gald)=="character") dt1$gald <-as.numeric(dt1$gald)
+if (class(dt1$cells_per_nu)=="factor") dt1$cells_per_nu <-as.numeric(levels(dt1$cells_per_nu))[as.integer(dt1$cells_per_nu) ]               
+if (class(dt1$cells_per_nu)=="character") dt1$cells_per_nu <-as.numeric(dt1$cells_per_nu)
+if (class(dt1$nu_per_ml)=="factor") dt1$nu_per_ml <-as.numeric(levels(dt1$nu_per_ml))[as.integer(dt1$nu_per_ml) ]               
+if (class(dt1$nu_per_ml)=="character") dt1$nu_per_ml <-as.numeric(dt1$nu_per_ml)
+if (class(dt1$cells_per_ml)=="factor") dt1$cells_per_ml <-as.numeric(levels(dt1$cells_per_ml))[as.integer(dt1$cells_per_ml) ]               
+if (class(dt1$cells_per_ml)=="character") dt1$cells_per_ml <-as.numeric(dt1$cells_per_ml)
+if (class(dt1$biovolume_conc)=="factor") dt1$biovolume_conc <-as.numeric(levels(dt1$biovolume_conc))[as.integer(dt1$biovolume_conc) ]               
+if (class(dt1$biovolume_conc)=="character") dt1$biovolume_conc <-as.numeric(dt1$biovolume_conc)
+if (class(dt1$biomass_conc)=="factor") dt1$biomass_conc <-as.numeric(levels(dt1$biomass_conc))[as.integer(dt1$biomass_conc) ]               
+if (class(dt1$biomass_conc)=="character") dt1$biomass_conc <-as.numeric(dt1$biomass_conc)
+if (class(dt1$relative_total_biovolume)=="factor") dt1$relative_total_biovolume <-as.numeric(levels(dt1$relative_total_biovolume))[as.integer(dt1$relative_total_biovolume) ]               
+if (class(dt1$relative_total_biovolume)=="character") dt1$relative_total_biovolume <-as.numeric(dt1$relative_total_biovolume)
+if (class(dt1$genus)!="factor") dt1$genus<- as.factor(dt1$genus)
+                
+# Convert Missing Values to NA for non-dates
+                
+
+# Here is the structure of the input data frame:
+str(dt1)  
+Phyto <- dt1
+write.csv(Phyto, row.names = FALSE, 
+          file = "./Data/Phyto_raw.csv")
+
+```
+

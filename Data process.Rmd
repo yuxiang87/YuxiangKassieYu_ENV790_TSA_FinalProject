@@ -61,7 +61,15 @@ empty_full_df <- monthly_dates %>%
 biomass <- empty_full_df %>%
   left_join(monthly_missing_data,by=c("Year","Month")) %>%
   mutate(total_biomass=total_biomass_monthly) %>% 
+  mutate(total_biomass=na.approx(total_biomass),rule=2) %>%
   dplyr::select(date,Year,Month,total_biomass)
+
+#inspect the data
+head(biomass)
 
 ```
 
+#save final raw data
+```{r}
+save(biomass, file="biomass.RDATA")
+```

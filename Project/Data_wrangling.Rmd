@@ -155,68 +155,67 @@ chemical$sampledate <- ymd(chemical$sampledate)
 ```{r}
 #08
 rawdata <- chemical
-chemical_ME_08_ph <- rawdata%>% 
+chemical_ME_08_totpuf_sloh   <- rawdata%>% 
   filter(depth %in% c(0:8)) %>%
   filter(lakeid == "ME") %>%
-  filter(!is.na(ph)) %>% # 
+  filter(!is.na(totpuf_sloh)) %>% # 
   group_by(sampledate) %>%
-  summarize(ph = mean(ph, na.rm = TRUE)) %>% mutate(depth_range = "0-8m")
+  summarize(totpuf_sloh  = mean(totpuf_sloh  , na.rm = TRUE)) %>% mutate(depth_range = "0-8m")
 
 
-chemical_ME_08_totnf <- rawdata%>% 
+chemical_ME_08_no3no2_sloh   <- rawdata%>% 
   filter(depth %in% c(0:8)) %>%
   filter(lakeid == "ME") %>%
-  filter(!is.na(totnf)) %>% # 
+  filter(!is.na(no3no2_sloh  )) %>% # 
   group_by(sampledate) %>%
-  summarize(totnf = mean(totnf, na.rm = TRUE)) %>% mutate(depth_range = "0-8m")
+  summarize(no3no2_sloh = mean(no3no2_sloh, na.rm = TRUE)) %>% mutate(depth_range = "0-8m")
  
-  
-chemical_ME_08_dic <- rawdata%>% 
+chemical_ME_08_nh4_sloh   <- rawdata%>% 
   filter(depth %in% c(0:8)) %>%
   filter(lakeid == "ME") %>%
-  filter(!is.na(dic)) %>% # 
+  filter(!is.na(nh4_sloh  )) %>% # 
   group_by(sampledate) %>%
-  summarize(dic = mean(dic, na.rm = TRUE))  %>% mutate(depth_range = "0-8m")
+  summarize(nh4_sloh = mean(nh4_sloh, na.rm = TRUE)) %>% mutate(depth_range = "0-8m")
 
+  
 
 #02  
- chemical_ME_02_ph <- rawdata%>% 
+ chemical_ME_02_totpuf_sloh <- rawdata%>% 
   filter(depth %in% c(0:2)) %>%
   filter(lakeid == "ME") %>%
-  filter(!is.na(ph)) %>% # 
+  filter(!is.na(totpuf_sloh)) %>% # 
   group_by(sampledate) %>%
-  summarize(ph = mean(ph, na.rm = TRUE)) %>% mutate(depth_range = "0-2m")
+  summarize(totpuf_sloh = mean(totpuf_sloh, na.rm = TRUE)) %>% mutate(depth_range = "0-2m")
 
-chemical_ME_02_totnf <- rawdata%>% 
+chemical_ME_02_no3no2_sloh <- rawdata%>% 
   filter(depth %in% c(0:2)) %>%
   filter(lakeid == "ME") %>%
-  filter(!is.na(totnf)) %>% # 
+  filter(!is.na(no3no2_sloh)) %>% # 
   group_by(sampledate) %>%
-  summarize(totnf = mean(totnf, na.rm = TRUE))   %>% mutate(depth_range = "0-2m")
-  
-chemical_ME_02_dic <- rawdata%>% 
-  filter(depth %in% c(0:2)) %>%
-  filter(lakeid == "ME") %>%
-  filter(!is.na(dic)) %>% # 
-  group_by(sampledate) %>%
-  summarize(dic = mean(dic, na.rm = TRUE))   %>% mutate(depth_range = "0-2m")
+  summarize(no3no2_sloh = mean(no3no2_sloh, na.rm = TRUE))   %>% mutate(depth_range = "0-2m")
 
-#ph
-chemical_ME_combined_ph <- rbind(chemical_ME_02_ph, chemical_ME_08_ph)
+chemical_ME_02_nh4_sloh <- rawdata%>% 
+  filter(depth %in% c(0:2)) %>%
+  filter(lakeid == "ME") %>%
+  filter(!is.na(nh4_sloh)) %>% # 
+  group_by(sampledate) %>%
+  summarize(nh4_sloh = mean(nh4_sloh, na.rm = TRUE))   %>% mutate(depth_range = "0-2m")
+
+
+#totpuf_sloh
+chemical_ME_combined_totpuf_sloh <- rbind(chemical_ME_02_totpuf_sloh, chemical_ME_08_totpuf_sloh)
 ME_raw1 <- cyan_physical_ME %>%
-  left_join(chemical_ME_combined_ph, by = c("sampledate", "depth_range")) 
+  left_join(chemical_ME_combined_totpuf_sloh, by = c("sampledate", "depth_range")) 
 
-#totnf
-chemical_ME_combined_totnf <- rbind(chemical_ME_02_totnf, chemical_ME_08_totnf)
+#totnuf_sloh
+chemical_ME_combined_nh4_sloh <- rbind(chemical_ME_02_nh4_sloh, chemical_ME_08_nh4_sloh)
 ME_raw2 <- ME_raw1 %>%
-  left_join(chemical_ME_combined_totnf, by = c("sampledate", "depth_range")) 
-  
-#dic
-chemical_ME_combined_dic <- rbind(chemical_ME_02_dic, chemical_ME_08_dic)
-ME_raw <- ME_raw2 %>%
-  left_join(chemical_ME_combined_dic, by = c("sampledate", "depth_range")) 
+  left_join(chemical_ME_combined_nh4_sloh, by = c("sampledate", "depth_range")) 
 
-                                                              
+chemical_ME_combined_no3no2_sloh <- rbind(chemical_ME_02_no3no2_sloh, chemical_ME_08_no3no2_sloh)
+ME_raw3 <- ME_raw2 %>%
+  left_join(chemical_ME_combined_no3no2_sloh, by = c("sampledate", "depth_range")) 
+                                            
 ```
 
 #final raw data

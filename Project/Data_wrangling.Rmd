@@ -229,3 +229,8 @@ ME_rawME_dayI <- ME_raw %>%
 
 ```
 
+#save final raw data
+```{r}
+save(ME_rawME_dayI, file="ME_rawME_dayI.RDATA")
+```
+

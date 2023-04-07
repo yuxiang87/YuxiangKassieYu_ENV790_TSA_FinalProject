@@ -1,0 +1,35 @@
+---
+title: "Data process"
+author: "Kassie"
+output: html_document
+date: "2023-04-07"
+---
+
+```{r packages}
+library(dplyr)
+library(lubridate)
+library(zoo)
+```
+
+#run data wrangling and inspect the dataset
+```{r packages}
+#please make sure to run the data_wrangling file first
+#I'll find a way to "connect" the two files later, but let's try manually first
+#sorry for any inconvience here
+
+#inspect the product in data_wrangle
+head(ME_rawME_dayI)
+```
+
+#generate monthly mean
+```{r}
+monthly_data <- ME_rawME_dayI %>%
+  mutate( Date = ymd(sampledate)) %>% 
+  mutate( Year = year(Date), 
+          Month = month(Date), 
+          Day = day(Date)) %>%
+  group_by( Year,Month ) %>%
+  summarise(total_biomass_monthly = mean(total_biomass))
+
+```
+

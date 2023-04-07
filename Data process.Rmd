@@ -13,23 +13,51 @@ library(zoo)
 
 #run data wrangling and inspect the dataset
 ```{r packages}
-#please make sure to run the data_wrangling file first
-#I'll find a way to "connect" the two files later, but let's try manually first
-#sorry for any inconvience here
-
+load("ME_rawME_dayI.RDATA")
 #inspect the product in data_wrangle
 head(ME_rawME_dayI)
 ```
 
-#generate monthly mean
+#generate monthly mean of biomass
 ```{r}
-monthly_data <- ME_rawME_dayI %>%
+monthly_missing_data <- ME_rawME_dayI %>%
   mutate( Date = ymd(sampledate)) %>% 
   mutate( Year = year(Date), 
           Month = month(Date), 
           Day = day(Date)) %>%
-  group_by( Year,Month ) %>%
+  group_by( Year, Month ) %>%
   summarise(total_biomass_monthly = mean(total_biomass))
+```
+
+#generate a whole sequence for NA operations
+```{r}
+#create a full sequence of date
+start_date <- ym("1995-01")
+end_date <- ym("2020-12")
+
+monthly_dates <- seq(from = start_date, to = end_date, by = "month") %>%
+  as.data.frame() 
+colnames(monthly_dates) <- c("date")
+
+#inspect the dates
+head(monthly_dates)
+
+```
+
+#plug in the data we've got
+```{r}
+
+#creating room for future variables
+empty_full_df <- monthly_dates %>%
+  mutate(Year = year(date), 
+        Month = month(date),) %>%
+  mutate(total_biomass=NA,
+         TC=0, TN=0, TP=0)
+
+biomass <- empty_full_df %>%
+  left_join(monthly_missing_data,by=c("Year","Month")) %>%
+  mutate(total_biomass=total_biomass_monthly) %>% 
+  dplyr::select(date,Year,Month,total_biomass)
 
 ```
 

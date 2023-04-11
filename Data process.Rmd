@@ -3,6 +3,8 @@ title: "Data process"
 author: "Kassie"
 output: html_document
 date: "2023-04-07"
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r packages}
@@ -73,3 +75,43 @@ head(biomass)
 ```{r}
 save(biomass, file="biomass.RDATA")
 ```
+
+#biomass+TNTP,Temperature
+New dataset include T, TN, TP.
+
+```{r}
+load("ME_rawME_dayI.RDATA")
+
+rawdata_all <- ME_rawME_dayI %>%
+  mutate( date = ymd(sampledate)) %>% 
+  mutate( Year = year(date), 
+          Month = month(date), 
+          Day = day(date)) %>%
+  group_by( Year, Month ) %>%
+  summarise('Biomass' = mean(total_biomass), 'TN' = mean(TN), 'TP' = mean(TP),'Temperature' = mean(Temperature)) %>% mutate(date = as.Date(paste(Year,Month, "01", sep = "-"), format = "%Y-%m-%d"))
+
+
+start_date <- ym("1995-01")
+end_date <- ym("2020-12")
+
+monthly_dates <- seq(from = start_date, to = end_date, by = "month") %>%
+  as.data.frame() 
+colnames(monthly_dates) <- c("date")
+
+
+rawdata_all <- right_join(rawdata_all,monthly_dates, by ='date' )
+
+
+#fill the NA
+# due to no T, TN, TP  before 1995-5-1, this all data also start at 1995-05-01
+rawdata_all_fill <- rawdata_all[,c(7,6,4,5,3)] %>% arrange(date) %>% filter(!is.na(date)) %>% 
+  filter(!date <= "1995-04-01" ) %>% mutate('Biomass'=na.approx(Biomass),rule=2)%>%
+  mutate(Temperature =na.approx(Temperature),rule=2)%>%
+  mutate(TN=na.approx(TN),rule=2)%>%
+  mutate(TP=na.approx(TP),rule=2)
+
+
+save(rawdata_all_fill, file="biomass_Env.csv")
+
+```
+

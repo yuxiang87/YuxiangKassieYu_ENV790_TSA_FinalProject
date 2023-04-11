@@ -221,10 +221,10 @@ ME_raw3 <- ME_raw2 %>%
 #final raw data
 
 ```{r}
-ME_rawME_dayI <- ME_raw %>%
+ME_rawME_dayI <- ME_raw3 %>%
   ungroup() %>% 
   arrange(sampledate) %>% 
-  mutate(date_diff = as.numeric(difftime(sampledate, lag(sampledate), units = "days")))
+  mutate(date_diff = as.numeric(difftime(sampledate, lag(sampledate), units = "days"))) %>% mutate(TN = nh4_sloh+no3no2_sloh, TP = totpuf_sloh)
 
 ```
 

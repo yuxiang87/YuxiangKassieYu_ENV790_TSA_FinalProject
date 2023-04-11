@@ -11,6 +11,8 @@ editor_options:
 library(dplyr)
 library(lubridate)
 library(zoo)
+library()
+library(readxl)
 ```
 
 #run data wrangling and inspect the dataset
@@ -111,7 +113,7 @@ rawdata_all_fill <- rawdata_all[,c(7,6,4,5,3)] %>% arrange(date) %>% filter(!is.
   mutate(TP=na.approx(TP),rule=2)
 
 
-save(rawdata_all_fill, file="./Data/biomass_Env.csv")
+save(rawdata_all_fill, file="./Data/biomass_Env.RDATA")
 
 ```
 

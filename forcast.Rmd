@@ -1,5 +1,6 @@
 ---
 title: "Forcasting"
+author: "Yu Huan"
 output:
   pdf_document: default
   html_document: default
@@ -289,22 +290,6 @@ plot(SARIMA_for_new)
 
 
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

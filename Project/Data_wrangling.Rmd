@@ -67,7 +67,7 @@ biomass_Division <- rawdata %>% group_by(division) %>%
 summarize('Count' = first(Count),'Total_Biomass' = sum(biomass_conc),'Max_Biomass' = max(biomass_conc, na.rm = TRUE),'Min_Biomass' = min(biomass_conc, na.rm = TRUE),'Mean_Biomass' = mean(biomass_conc, na.rm = TRUE))  %>% arrange(desc(Total_Biomass))
 
 kable(biomass_Division, 
-      col.names = c("Genus","Count", "Total Biomass", "Max Biomass", "Min Biomass", "Mean Biomass"),
+      col.names = c("Division","Count", "Total Biomass", "Max Biomass", "Min Biomass", "Mean Biomass"),
       caption = "Division level Total Biomass (\\textit{mg/L})")
 ```
 
@@ -226,10 +226,51 @@ ME_rawME_dayI <- ME_raw3 %>%
   arrange(sampledate) %>% 
   mutate(date_diff = as.numeric(difftime(sampledate, lag(sampledate), units = "days"))) %>% mutate(TN = nh4_sloh+no3no2_sloh, TP = totpuf_sloh)
 
+Table_ME_rawME_dayI_10 <- ME_rawME_dayI[c(1:10),c(1,2,5,6,12,13,14)]
+kable(Table_ME_rawME_dayI_10,
+      caption = "rawdata")
+
+
+
+
 ```
 
 #save final raw data
 ```{r}
 save(ME_rawME_dayI, file="ME_rawME_dayI.RDATA")
+```
+
+```{r}
+rawdata_all <- ME_rawME_dayI %>%
+  mutate( date = ymd(sampledate)) %>% 
+  mutate( Year = year(date), 
+          Month = month(date), 
+          Day = day(date)) %>%
+  group_by( Year, Month ) %>%
+  summarise('Biomass' = mean(total_biomass), 'TN' = mean(TN), 'TP' = mean(TP),'Temperature' = mean(Temperature)) %>% mutate(date = as.Date(paste(Year,Month, "01", sep = "-"), format = "%Y-%m-%d"))
+
+
+start_date <- ym("1995-01")
+end_date <- ym("2020-12")
+
+monthly_dates <- seq(from = start_date, to = end_date, by = "month") %>%
+  as.data.frame() 
+colnames(monthly_dates) <- c("date")
+
+
+rawdata_all <- right_join(rawdata_all,monthly_dates, by ='date' )
+
+
+#fill the NA
+# due to no T, TN, TP  before 1995-5-1, this all data also start at 1995-05-01
+rawdata_all_fill <- rawdata_all[,c(7,6,4,5,3)] %>% arrange(date) %>% filter(!is.na(date)) %>% 
+  filter(!date <= "1995-04-01" ) %>% mutate('Biomass'=na.approx(Biomass),rule=2)%>%
+  mutate(Temperature =na.approx(Temperature),rule=2)%>%
+  mutate(TN=na.approx(TN),rule=2)%>%
+  mutate(TP=na.approx(TP),rule=2)
+
+rawdata_all_fill_10 <- rawdata_all_fill[c(1:10),c(1:5)]
+kable(rawdata_all_fill_10,
+      caption = "rawdata_1")
 ```
 

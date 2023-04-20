@@ -237,7 +237,7 @@ kable(Table_ME_rawME_dayI_10,
 
 #save final raw data
 ```{r}
-save(ME_rawME_dayI, file="ME_rawME_dayI.RDATA")
+save(ME_rawME_dayI, file="./Data/ME_rawME_dayI.RDATA")
 ```
 
 ```{r}
@@ -272,5 +272,6 @@ rawdata_all_fill <- rawdata_all[,c(7,6,4,5,3)] %>% arrange(date) %>% filter(!is.
 rawdata_all_fill_10 <- rawdata_all_fill[c(1:10),c(1:5)]
 kable(rawdata_all_fill_10,
       caption = "rawdata_1")
+save(rawdata_all_fill, file="./Data/biomass_Env.RDATA")
 ```
 

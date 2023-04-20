@@ -1,12 +1,12 @@
 ---
-title: 'A07 - Crafting Reports'
+title: 'TSA FINAL REPORT:'
 author: "Yuxiang_Ren" 
 date: "Spring 2023"
 output: 
   pdf_document:
     toc: True
-bibliography: references.bib
 csl: ieee.csl
+bibliography: reference.bib
 link-citations: true
 ---
 ```{r packages, include=FALSE}
@@ -30,6 +30,10 @@ Three datasets used in the project were collected from EDI Data Portal, includin
 1. North Temperate Lakes LTER: Phytoplankton - Madison Lakes Area 1995 – current;[@Phytoplankton_data]
 2. North Temperate Lakes LTER: Physical Limnology of Primary Study Lakes 1981 – current;
 3. North Temperate Lakes LTER: Chemical Limnology of Primary Study Lakes: Nutrients, pH and Carbon 1981 – current.
+```{r Data}
+
+
+```
 
 
 ## Reslut
@@ -42,6 +46,12 @@ Three datasets used in the project were collected from EDI Data Portal, includin
 
 
 
+## Reference
+```{r}
+#To add reference, you need first add reference in reference in reference.bib. 
+#Than use"[@uniqueID]" to site it.
+
+```
 
 
 

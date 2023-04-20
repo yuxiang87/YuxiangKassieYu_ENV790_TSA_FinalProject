@@ -1,0 +1,47 @@
+---
+title: 'A07 - Crafting Reports'
+author: "Yuxiang_Ren" 
+date: "Spring 2023"
+output: 
+  pdf_document:
+    toc: True
+bibliography: references.bib
+csl: ieee.csl
+link-citations: true
+---
+```{r packages, include=FALSE}
+library(tidyverse);library(lubridate);library(here);library(knitr)
+```
+
+## Abstract
+
+
+
+## Introduction
+
+
+
+## Method+Data
+
+> **Data**
+
+Three datasets used in the project were collected from EDI Data Portal, including:
+
+1. North Temperate Lakes LTER: Phytoplankton - Madison Lakes Area 1995 – current;[@Phytoplankton_data]
+2. North Temperate Lakes LTER: Physical Limnology of Primary Study Lakes 1981 – current;
+3. North Temperate Lakes LTER: Chemical Limnology of Primary Study Lakes: Nutrients, pH and Carbon 1981 – current.
+
+
+## Reslut
+
+
+
+
+
+## Discussion
+
+
+
+
+
+

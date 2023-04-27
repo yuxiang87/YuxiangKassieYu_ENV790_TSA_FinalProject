@@ -79,8 +79,8 @@ kable(Table_ME_rawME_dayI_10,
       caption = "rawdata")
 
 ```
-d.	We averaged the data monthly and used the zoo function (na.approx, rule = 2) to fill in NA values. Due to this method is not suitable for filling in NA values at the beginning of data, data before May 1995 were removed.
-e. The final dataset includes dates (from May 1995 to December 2020), temperature, total nitrogen, total phosphorus, and biomass (Table 4).
+d.	We averaged the data monthly and used the zoo function (na.approx, rule = 2) to fill in NA values. Due to this method is not suitable for filling in NA values at the beginning of data, data before  1996 were removed.
+e. The final dataset includes dates (from 1996 to December 2020), temperature, total nitrogen, total phosphorus, and biomass (Table 4).
 
 ```{r data cleanning2, echo=FALSE}
 biomass_env <- read.csv(file= "./Data/biomass_Env.csv")

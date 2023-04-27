@@ -270,6 +270,9 @@ rawdata_all_fill <- rawdata_all[,c(7,6,4,5,3)] %>% arrange(date) %>% filter(!is.
   mutate(TP=na.approx(TP),rule=2)
 rawdata_all_fill <-rawdata_all_fill[,c(1:5)] 
 
+rawdata_all_fill <- rawdata_all_fill[c(9:308),]
+
+
 rawdata_all_fill_10 <- rawdata_all_fill[c(1:10),c(1:5)]
 kable(rawdata_all_fill_10,
       caption = "rawdata_1")

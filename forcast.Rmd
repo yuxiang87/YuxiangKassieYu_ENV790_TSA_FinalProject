@@ -216,6 +216,138 @@ plot(SARIMA_for_new)
 
 
 
+Use recent ten-year data to forcast
+
+```{r}
+# Change the time span
+
+# Transform to time series format
+
+ts_biomass_data <- ts(
+  biomass_data_frame[169:300,2],
+  start=c(year(biomass_data_frame$Month[169]),month(biomass_data_frame$Month[169])),
+  frequency=12) 
+
+ts_biomass <- ts(
+  biomass_data_frame[169:288,2],
+  start=c(year(biomass_data_frame$Month[169]),month(biomass_data_frame$Month[169])),
+  frequency=12)
+
+
+last_obs <- ts_biomass_data[121:132]
+
+
+
+```
+
+```{r}
+# Model 1: Arithmetic mean
+# The meanf() has no holdout option
+MEAN_seas <- meanf(y = ts_biomass, h = 12)  
+checkresiduals(MEAN_seas)
+plot(MEAN_seas)
+
+
+# Model 2: Seasonal naive
+SNAIVE_seas <- snaive(ts_biomass, h=12, holdout=FALSE)
+checkresiduals(SNAIVE_seas)
+plot(SNAIVE_seas)
+
+
+# Model 3: SARIMA
+
+SARIMA_autofit <- auto.arima(ts_biomass)
+checkresiduals(SARIMA_autofit)
+
+#Generating forecasts
+#remember auto.arima does not call the forecast() internally so we need one more step
+SARIMA_for <- forecast(SARIMA_autofit,h=12)
+plot(SARIMA_for)
+
+
+# Model 4: SS Exponential smoothing
+SSES_seas <- es(ts_biomass,model="ZZZ",h=12,holdout=FALSE)
+plot(SSES_seas)
+checkresiduals(SSES_seas)
+
+
+# Model 5: SS with StructTS()
+
+SS_seas <- StructTS(ts_biomass,
+                    type="BSM",fixed=c(0,0.001,0.3,NA))   #this function has convergence issues
+checkresiduals(SS_seas)
+
+#Generating forecasts
+# StructTS() does not call the forecast() internally so we need one more step
+SS_for <- forecast(SS_seas,h=12)
+plot(SS_for)
+
+
+
+#Model 1: Arithmetic mean
+MEAN_scores <- accuracy(MEAN_seas$mean,last_obs)  #store the performance metrics
+
+#Model 2: Seasonal naive 
+SNAIVE_scores <- accuracy(SNAIVE_seas$mean,last_obs)
+
+# Model 3:  SARIMA 
+SARIMA_scores <- accuracy(SARIMA_for$mean,last_obs)
+
+# Model 4:  SSES
+SSES_scores <- accuracy(SSES_seas$forecast,last_obs)
+
+# Model 5:  BSM 
+SS_scores <- accuracy(SS_for$mean,last_obs)
+
+
+#create data frame
+seas_scores <- as.data.frame(rbind(MEAN_scores, SNAIVE_scores, SARIMA_scores,SSES_scores,SS_scores))
+row.names(seas_scores) <- c("MEAN", "SNAIVE","SARIMA","SSES","BSM")
+
+#choose model with lowest RMSE
+best_model_index <- which.min(seas_scores[,"RMSE"])
+cat("The best model by RMSE is:", row.names(seas_scores[best_model_index,])) 
+
+
+kbl(seas_scores, 
+      caption = "Forecast Accuracy for Seasonal Data",
+      digits = array(5,ncol(seas_scores))) %>%
+  kable_styling(full_width = FALSE, position = "center") %>%
+  #highlight model with lowest RMSE
+  kable_styling(latex_options="striped", stripe_index = which.min(seas_scores[,"RMSE"]))
+
+
+
+autoplot(ts_biomass_data) +
+  autolayer(MEAN_seas, PI=FALSE, series="Mean") +
+  autolayer(SNAIVE_seas, PI=FALSE, series="Naïve") +
+  autolayer(SARIMA_for,PI=FALSE, series="SARIMA") +
+  autolayer(SSES_seas$forecast, series="SSES") +
+  autolayer(SS_for,PI=FALSE,series="BSM") + 
+  xlab("Month") + ylab("Electricity Retail Price ($/kWh)") +
+  guides(colour=guide_legend(title="Forecast"))
+
+
+
+autoplot(ts_biomass_data) +
+
+autolayer(SARIMA_for,PI=FALSE, series="SARIMA") +
+  xlab("Month") + ylab("Total Biomass (g/m2)") +
+  guides(colour=guide_legend(title="Forecast"))
+
+
+
+# Forecast
+
+SARIMA_autofit_new <- auto.arima(ts_biomass_data)
+checkresiduals(SARIMA_autofit_new)
+
+SARIMA_for_new <- forecast(SARIMA_autofit_new,h=12)
+plot(SARIMA_for_new)
+
+
+
+```
 
 
 

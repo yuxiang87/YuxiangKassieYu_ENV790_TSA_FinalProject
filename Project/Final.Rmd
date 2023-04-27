@@ -15,6 +15,10 @@ editor_options:
 ---
 ```{r packages, include=FALSE}
 
+library(tidyverse);
+library(lubridate);
+library(here);
+library(knitr)
 
 ```
 
@@ -284,16 +288,16 @@ Use recent ten-year data to forcast
 
 ts_biomass_data <- ts(
   biomass_data_frame[169:300,2],
-  start=c(year(biomass_data_frame$Month[181]),month(biomass_data_frame$Month[181])),
+  start=c(year(biomass_data_frame$Month[169]),month(biomass_data_frame$Month[169])),
   frequency=12) 
 
 ts_biomass <- ts(
   biomass_data_frame[169:288,2],
-  start=c(year(biomass_data_frame$Month[181]),month(biomass_data_frame$Month[181])),
+  start=c(year(biomass_data_frame$Month[169]),month(biomass_data_frame$Month[169])),
   frequency=12)
 
 
-last_obs <- ts_biomass_data[289:300]
+last_obs <- ts_biomass_data[121:132]
 
 
 

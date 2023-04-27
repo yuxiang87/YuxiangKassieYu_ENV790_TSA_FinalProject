@@ -279,7 +279,7 @@ plot(SARIMA_for_new)
 ```
 
 
-Use recent ten-year data to forcast
+Use recent ten-year data (2010-2020) to forecast
 
 ```{r}
 # Change the time span

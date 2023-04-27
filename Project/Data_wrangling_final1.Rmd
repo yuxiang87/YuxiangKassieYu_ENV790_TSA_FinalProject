@@ -268,10 +268,14 @@ rawdata_all_fill <- rawdata_all[,c(7,6,4,5,3)] %>% arrange(date) %>% filter(!is.
   mutate(Temperature =na.approx(Temperature),rule=2)%>%
   mutate(TN=na.approx(TN),rule=2)%>%
   mutate(TP=na.approx(TP),rule=2)
+rawdata_all_fill <-rawdata_all_fill[,c(1:5)] 
 
 rawdata_all_fill_10 <- rawdata_all_fill[c(1:10),c(1:5)]
 kable(rawdata_all_fill_10,
       caption = "rawdata_1")
 save(rawdata_all_fill, file="./Data/biomass_Env.RDATA")
+
+write.csv(rawdata_all_fill, row.names = FALSE, 
+          file = "./Data/biomass_env.csv")
 ```
 

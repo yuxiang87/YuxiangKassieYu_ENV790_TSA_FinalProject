@@ -162,6 +162,12 @@ par(mfrow=c(1,2))
 ACF_Plot <- Acf(ts_biomass_data, lag = 40, plot = TRUE,main="")
 PACF_Plot <- Pacf(ts_biomass_data, lag = 40, plot = TRUE,main="")
 
+
+#Plot ts decompose
+decompose_biomass_data <- decompose(ts_biomass,"additive")
+
+plot(decompose_biomass_data)
+
 ```
 
 
@@ -297,6 +303,15 @@ ts_biomass <- ts(
 last_obs <- ts_biomass_data[121:132]
 
 
+#ACF and PACF plots
+par(mfrow=c(1,2))
+ACF_Plot <- Acf(ts_biomass_data, lag = 40, plot = TRUE,main="")
+PACF_Plot <- Pacf(ts_biomass_data, lag = 40, plot = TRUE,main="")
+
+#Plot ts decompose
+decompose_biomass_data <- decompose(ts_biomass,"additive")
+
+plot(decompose_biomass_data)
 
 ```
 

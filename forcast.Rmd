@@ -32,9 +32,9 @@ library(smooth)
 library(kableExtra)
 ```
 
-## Including Plots
+### (1) Auto-regression
 
-You can also embed plots, for example:
+Using the full sample from 1996 to 2020, The original plot, Autocorrelation Function (ACF) and the partial autocorrelation function (PACF) plots shown as follows:
 
 ```{r pressure, echo=FALSE}
 
@@ -58,10 +58,14 @@ biomass_data_frame <- data.frame(Month=biomass_data_processed$Month,
 
 # Transform to time series format
 
+# Full sample
+
 ts_biomass_data <- ts(
   biomass_data_frame[1:300,2],
   start=c(year(biomass_data_frame$Month[1]),month(biomass_data_frame$Month[1])),
   frequency=12) 
+
+# Full sample leave 2020 out for accuracy test
 
 ts_biomass <- ts(
   biomass_data_frame[1:288,2],
@@ -89,12 +93,20 @@ ACF_Plot <- Acf(ts_biomass_data, lag = 40, plot = TRUE,main="")
 PACF_Plot <- Pacf(ts_biomass_data, lag = 40, plot = TRUE,main="")
 
 ```
+It can be seen that there are both clear trend and seasonal component in this plot. 
+The decomposition of the time series is shown as follows:
 
 
+```{r}
+#Plot ts decompose
+decompose_biomass_data <- decompose(ts_biomass,"additive")
 
+plot(decompose_biomass_data)
+```
 
+Given the complexity of the series, we further try five models to fit the model and conduct forecasting.
 
-
+The method includes Arithmetic mean, Seasonal naive, SARIMA, SS Exponential smoothing, and BSM (SS with StructTS). We also present their forecast plots and residuals analysis plots individually. We first leave the last year which is the year of 2020 out for the purpose of further comparison in the accuracy test.
 
 ```{r}
 # Model 1: Arithmetic mean
@@ -116,7 +128,7 @@ SARIMA_autofit <- auto.arima(ts_biomass)
 checkresiduals(SARIMA_autofit)
 
 #Generating forecasts
-#remember auto.arima does not call the forecast() internally so we need one more step
+
 SARIMA_for <- forecast(SARIMA_autofit,h=12)
 plot(SARIMA_for)
 
@@ -134,14 +146,19 @@ SS_seas <- StructTS(ts_biomass,
 checkresiduals(SS_seas)
 
 #Generating forecasts
-# StructTS() does not call the forecast() internally so we need one more step
 SS_for <- forecast(SS_seas,h=12)
 plot(SS_for)
 
 
 
+```
+
+Based on the residuals analysis plots, SARIMA, Exponential smoothing, and BSM shows better distribution in residuals with a near random distribution and, most points inside the ACF confidence interval without seasonality. However, it is not intuitive which model is the best. We further conduct more rigorous accuracy test for each model by comparing the forecasted value in the last year which is 2020 with the observed value. The result of the accuracy test is conducted as follows:
+
+```{r}
+
 #Model 1: Arithmetic mean
-MEAN_scores <- accuracy(MEAN_seas$mean,last_obs)  #store the performance metrics
+MEAN_scores <- accuracy(MEAN_seas$mean,last_obs)
 
 #Model 2: Seasonal naive 
 SNAIVE_scores <- accuracy(SNAIVE_seas$mean,last_obs)
@@ -155,6 +172,13 @@ SSES_scores <- accuracy(SSES_seas$forecast,last_obs)
 # Model 5:  BSM 
 SS_scores <- accuracy(SS_for$mean,last_obs)
 
+
+```
+
+To present the accuracy result in a comparable way, I created a compare performance metrics to select the model with the lowest RMSE. The compare performance metrics is shown as follows:
+
+
+```{r}
 
 #create data frame
 seas_scores <- as.data.frame(rbind(MEAN_scores, SNAIVE_scores, SARIMA_scores,SSES_scores,SS_scores))
@@ -173,7 +197,13 @@ kbl(seas_scores,
   kable_styling(latex_options="striped", stripe_index = which.min(seas_scores[,"RMSE"]))
 
 
+```
 
+Based on highlighted lowest RMSE in the compare performance metrics, the model with the best fit is the SARIMA model. The parameter of the fitted SARIMA model is ARIMA(1,1,1)(0,0,1).
+
+To visually compare the result of forecasts using different models, we further jointly plot the forecast generated using five models and compare them with the actural observed value. The plot is shown as follows:
+
+```{r}
 autoplot(ts_biomass_data) +
   autolayer(MEAN_seas, PI=FALSE, series="Mean") +
   autolayer(SNAIVE_seas, PI=FALSE, series="Naïve") +
@@ -184,15 +214,22 @@ autoplot(ts_biomass_data) +
   guides(colour=guide_legend(title="Forecast"))
 
 
+```
 
+From the plot we can see the SARIMA is the one with the closest forecasted value to the actual observation. If we only plot the actual value and the forecasted value using our outperforming model, SARIMA, is shown as follows:
+
+```{r}
 autoplot(ts_biomass_data) +
 
 autolayer(SARIMA_for,PI=FALSE, series="SARIMA") +
   xlab("Month") + ylab("Total Biomass (g/m2)") +
   guides(colour=guide_legend(title="Forecast"))
 
+```
 
+Then, we use our selected SARIMA model to conduct the forecast for the year of 2021 using the full sample. The residual general shows random and most of the value are within the confidence interval of ACF plot. The forecast plot with confidence interval of 95% for 2021 is shown as follows:
 
+```{r}
 # Forecast
 
 SARIMA_autofit_new <- auto.arima(ts_biomass_data)
@@ -200,23 +237,16 @@ checkresiduals(SARIMA_autofit_new)
 
 SARIMA_for_new <- forecast(SARIMA_autofit_new,h=12)
 plot(SARIMA_for_new)
+```
 
+The predicted value for the year of 2021 is presented as follows:
 
-
+```{r}
+print(SARIMA_for_new$mean)
 ```
 
 
-
-
-
-
-
-
-
-
-
-
-Use recent ten-year data to forcast
+From the original plot of the biomass at the begining, it seems start to show a different pattern since 2010. In order to make sure our forecast not bias by some sudden changes in the previous old years. We further limit our sample to the recent ten years. We use sample from 2010 to 2020 to predict. All the procedures are the same as the above full sample analysis only by changing the time span to recent 10 years.
 
 ```{r}
 # Change the time span
@@ -236,9 +266,29 @@ ts_biomass <- ts(
 
 last_obs <- ts_biomass_data[121:132]
 
+# Plot the time series, ACF, and PACF
 
+
+
+TS_Plot <- ggplot(biomass_data_frame, aes(x=Month, y=Biomass)) +
+      geom_line()
+
+plot(TS_Plot)
+
+
+#ACF and PACF plots
+par(mfrow=c(1,2))
+ACF_Plot <- Acf(ts_biomass_data, lag = 40, plot = TRUE,main="")
+PACF_Plot <- Pacf(ts_biomass_data, lag = 40, plot = TRUE,main="")
+
+#Plot ts decompose
+decompose_biomass_data <- decompose(ts_biomass,"additive")
+
+plot(decompose_biomass_data)
 
 ```
+
+The ACF and PACF plot pattern show similar as before. We still use those five models to fit the data. The fitting process and forecast plot is shown as follows:
 
 ```{r}
 # Model 1: Arithmetic mean
@@ -318,6 +368,14 @@ kbl(seas_scores,
 
 
 
+
+
+
+```
+
+Based on the compare performance metrics, the SARIMA still shows the best fit with the lowest RMSE value which is consistent with the exercise using the full sample. The parameter for the SARIMA model is ARIMA(1,0,0)(1,0,0). To visually compare the result of forecasts using different models, we further jointly plot the forecast generated using five models and compare them with the actural observed value, and again also isolate SARIMA forecast plot alone with the actual values. The plots are shown as follows:
+
+```{r}
 autoplot(ts_biomass_data) +
   autolayer(MEAN_seas, PI=FALSE, series="Mean") +
   autolayer(SNAIVE_seas, PI=FALSE, series="Naïve") +
@@ -337,6 +395,11 @@ autolayer(SARIMA_for,PI=FALSE, series="SARIMA") +
 
 
 
+```
+
+Using SARIMA model to conduct the forecast for the year of 2021 using the full sample. The residual general shows random and most of the value are within the confidence interval of ACF plot. Then, the forecast plot with confidence interval of 95% for 2021 is shown as follows:
+
+```{r}
 # Forecast
 
 SARIMA_autofit_new <- auto.arima(ts_biomass_data)
@@ -344,15 +407,13 @@ checkresiduals(SARIMA_autofit_new)
 
 SARIMA_for_new <- forecast(SARIMA_autofit_new,h=12)
 plot(SARIMA_for_new)
-
-
-
 ```
 
+The predicted value for the year of 2021 using recent ten year data from 2010 is presented as follows:
 
-
-
-
+```{r}
+print(SARIMA_for_new$mean)
+```
 
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

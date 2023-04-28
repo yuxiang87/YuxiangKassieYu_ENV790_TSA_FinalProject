@@ -1,18 +1,22 @@
 ---
 title: 'TSA FINAL REPORT:'
-author: "Yuxiang_Ren" 
+author: "Yuxiang_Ren"
 date: "Spring 2023"
-output: 
+output:
+  html_document:
+    toc: yes
+    df_print: paged
   pdf_document:
-    toc: True
+    toc: yes
     includes:
       in_header: header.tex
-csl: apa-6th-edition.csl
+csl: "apa-6th-edition.csl"
 bibliography: reference.bib
-link-citations: true
-editor_options: 
+link-citations: yes
+editor_options:
   chunk_output_type: console
 ---
+
 ```{r packages, include=FALSE}
 
 library(tidyverse);
@@ -28,20 +32,13 @@ library(tseries)
 library(outliers)
 library(tidyverse)
 library(smooth)
-
-#New package for M9 to assist with tables
-#install.packages("kableExtra")
 library(kableExtra)
 
 ```
 
 ## Abstract
 
-
-
 ## Introduction
-
-
 
 ## Method (Data Processing)
 
@@ -49,15 +46,14 @@ library(kableExtra)
 
 Three datasets used in the project were collected from EDI Data Portal, including:
 
-1. North Temperate Lakes LTER: Phytoplankton - Madison Lakes Area 1995 – current;[@Phytoplankton_data]
-2. North Temperate Lakes LTER: Physical Limnology of Primary Study Lakes 1981 – current;
-3. North Temperate Lakes LTER: Chemical Limnology of Primary Study Lakes: Nutrients, pH and Carbon 1981 – current.
+1.  North Temperate Lakes LTER: Phytoplankton - Madison Lakes Area 1995 -- current;[@Phytoplankton_data]
+2.  North Temperate Lakes LTER: Physical Limnology of Primary Study Lakes 1981 -- current;
+3.  North Temperate Lakes LTER: Chemical Limnology of Primary Study Lakes: Nutrients, pH and Carbon 1981 -- current.
 
 The three files respectively record the water body phytoplankton information, physical information and chemical information of multiple lakes in the Wisconsin range. We analyzed these data at the beginning stage to screen out suitable research subjects, including the target lake, and primary algae responsible for blooms. First, we chose Mendota Lake (ME) for this project, as it has more time measurement data compared to other lakes, which might be more conducive to time series analysis and obtaining more reliable results (Table 1). Second, to obtain information on dominant species that may cause water blooms, we accumulated the biomass of algae from different divisions and considered the algae with the highest total biomass to be the main contributor to water bloom outbreaks. It is worth noting that the original data records the biomass of specific algal species on the observation day. Therefore, to obtain division-level data, we summed the biomass of all species within the same division on the same day to obtain the biomass information for the division. The result shows that the dominant division is Cyanophyta, which is also consistent with other studies (Table 2)[@Mendota1][@Mendota2].
 
-
 ```{r Data1, echo=FALSE, message=FALSE, warning=FALSE}
-phyto <- read.csv( file = "./Data/Phyto_raw.csv")
+phyto <- read.csv(file = "./Data/Phyto_raw_2.csv")
 phyto$sampledate <- ymd(phyto$sampledate)
 rawdata <- phyto
 site_date_info <- rawdata %>%
@@ -80,9 +76,9 @@ kable(biomass_Division[c(1:5),],
 
 After identifying the target lake and algal division, we cleaned and combined the three data tables. The following are the data cleaning steps:
 
-a.	Integrate the phytoplankton data according to lakeid, sampledate, depth range, and division to obtain the biomass information of each division on the observation day. Then, filter out all data with a lake id of Mendota and a division of Cyanophyta.
-b.	Filter out the physical and chemical information of Lake Mendota. Considering that the original data records information at different depths on the same observation day, we calculated the average of all environmental data at depths of 0-8m, which correspond to the depths mentioned in the algae information. It is worth noting that on some dates, the depth of the algae information is 0-2m, and in these cases, we used the average environmental data for 0-2m.
-c.	Based on the sampling date and depth range, we combined these data together (Table 3).  
+a.  Integrate the phytoplankton data according to lakeid, sampledate, depth range, and division to obtain the biomass information of each division on the observation day. Then, filter out all data with a lake id of Mendota and a division of Cyanophyta.
+b.  Filter out the physical and chemical information of Lake Mendota. Considering that the original data records information at different depths on the same observation day, we calculated the average of all environmental data at depths of 0-8m, which correspond to the depths mentioned in the algae information. It is worth noting that on some dates, the depth of the algae information is 0-2m, and in these cases, we used the average environmental data for 0-2m.
+c.  Based on the sampling date and depth range, we combined these data together (Table 3).
 
 ```{r data cleanning1,echo=FALSE}
 #see more detailed at "Data_wrangling_final1.RMD
@@ -93,8 +89,9 @@ kable(Table_ME_rawME_dayI_10,
       caption = "rawdata")
 
 ```
-d.	We averaged the data monthly and used the zoo function (na.approx, rule = 2) to fill in NA values. Due to this method is not suitable for filling in NA values at the beginning of data, data before  1996 were removed.
-e. The final dataset includes dates (from 1996 to December 2020), temperature, total nitrogen, total phosphorus, and biomass (Table 4).
+
+d.  We averaged the data monthly and used the zoo function (na.approx, rule = 2) to fill in NA values. Due to this method is not suitable for filling in NA values at the beginning of data, data before 1996 were removed.
+e.  The final dataset includes dates (from 1996 to December 2020), temperature, total nitrogen, total phosphorus, and biomass (Table 4).
 
 ```{r data cleanning2, echo=FALSE}
 biomass_env <- read.csv(file= "./Data/biomass_Env.csv")
@@ -103,12 +100,9 @@ kable(biomass_env[c(1:5),],
       caption = "Final Data")
 ```
 
-
-
 ## Result (1)
 
 Original (1996-2020)
-
 
 ```{r pressure, echo=FALSE}
 
@@ -169,8 +163,6 @@ decompose_biomass_data <- decompose(ts_biomass,"additive")
 plot(decompose_biomass_data)
 
 ```
-
-
 
 ```{r}
 # Model 1: Arithmetic mean
@@ -280,7 +272,6 @@ plot(SARIMA_for_new)
 
 
 ```
-
 
 Use recent ten-year data (2010-2020) to forecast
 
@@ -425,6 +416,7 @@ plot(SARIMA_for_new)
 ```
 
 \newpage
+
 ## Result (2) env-biomass Kexin
 
 ```{r Ren_TSA_data, include=FALSE}
@@ -491,20 +483,12 @@ autoplot(ts_biomass_data) +
 
 ```
 
-
-
-
-
 ## Discussion
 
-
-
 ## Reference
+
 ```{r}
 #To add reference, you need first add reference in reference in reference.bib. 
 #Than use"[@uniqueID]" to site it.
 
 ```
-
-
-

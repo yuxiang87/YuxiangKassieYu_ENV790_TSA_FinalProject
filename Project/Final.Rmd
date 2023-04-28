@@ -528,8 +528,4 @@ Therefore, the improvement from adding exogenous variables could be significantl
 
 ## Reference
 
-```{r}
-#To add reference, you need first add reference in reference in reference.bib. 
-#Than use"[@uniqueID]" to site it.
 
-```

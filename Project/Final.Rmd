@@ -253,7 +253,7 @@ autoplot(ts_biomass_data) +
   autolayer(SARIMA_for,PI=FALSE, series="SARIMA") +
   autolayer(SSES_seas$forecast, series="SSES") +
   autolayer(SS_for,PI=FALSE,series="BSM") + 
-  xlab("Month") + ylab("Electricity Retail Price ($/kWh)") +
+  xlab("Month") + ylab("Total Biomass (g/m2)") +
   guides(colour=guide_legend(title="Forecast"))
 
 
@@ -387,7 +387,7 @@ autoplot(ts_biomass_data) +
   autolayer(SARIMA_for,PI=FALSE, series="SARIMA") +
   autolayer(SSES_seas$forecast, series="SSES") +
   autolayer(SS_for,PI=FALSE,series="BSM") + 
-  xlab("Month") + ylab("Electricity Retail Price ($/kWh)") +
+  xlab("Month") + ylab("Total Biomass (g/m2))") +
   guides(colour=guide_legend(title="Forecast"))
 
 

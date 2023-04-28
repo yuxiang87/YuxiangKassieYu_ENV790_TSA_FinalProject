@@ -19,6 +19,19 @@ library(tidyverse);
 library(lubridate);
 library(here);
 library(knitr)
+#Load/install required package here
+library(lubridate)
+library(ggplot2)
+library(forecast)  
+library(Kendall)
+library(tseries)
+library(outliers)
+library(tidyverse)
+library(smooth)
+
+#New package for M9 to assist with tables
+#install.packages("kableExtra")
+library(kableExtra)
 
 ```
 
@@ -92,23 +105,7 @@ kable(biomass_env[c(1:5),],
 
 
 
-## Result ()
-
-```{r cars}
-#Load/install required package here
-library(lubridate)
-library(ggplot2)
-library(forecast)  
-library(Kendall)
-library(tseries)
-library(outliers)
-library(tidyverse)
-library(smooth)
-
-#New package for M9 to assist with tables
-#install.packages("kableExtra")
-library(kableExtra)
-```
+## Result (1)
 
 Original (1996-2020)
 
@@ -412,7 +409,74 @@ plot(SARIMA_for_new)
 
 ```
 
+\newpage
+## Result (2) env-biomass Kexin
+
+```{r Ren_TSA_data, include=FALSE}
+biomass_env
+Ren_ts_biomass <- ts(
+  biomass_env[c(1:288),5],
+  start=c(1996,01),
+  frequency=12) 
+Ren_ts_T <- ts(
+  biomass_env[c(1:288),2],
+  start=c(1996,01),
+  frequency=12) 
+future_T <- biomass_env[c(289:300),2]
+Ren_ts_TN <- ts(
+  biomass_env[c(1:288),3],
+  start=c(1996,01),
+  frequency=12) 
+future_TN <- biomass_env[c(289:300),3]
+Ren_ts_TP <- ts(
+  biomass_env[c(1:288),3],
+  start=c(1996,01),
+  frequency=12) 
+future_TP <- biomass_env[c(289:300),4]
 ```
+
+```{r Ren_bio_env_autoARIMA, message=FALSE, warning=FALSE, include=FALSE}
+#arima_ren
+arima_ren <- auto.arima(Ren_ts_biomass, seasonal = TRUE)
+forecast_biomass_Ren <- forecast(arima_ren, h = 12)
+#biomass~T
+arima_biomass_T <- auto.arima(Ren_ts_biomass, xreg = Ren_ts_T, seasonal = TRUE)
+forecast_biomass_T <- forecast(arima_biomass_T, h = 12, xreg = future_T)
+#biomass~TN
+arima_biomass_TN <- auto.arima(Ren_ts_biomass, xreg = Ren_ts_TN, seasonal = TRUE)
+forecast_biomass_TN <- forecast(arima_biomass_TN, h = 12, xreg = future_TN)
+#biomass~TP
+arima_biomass_TP <- auto.arima(Ren_ts_biomass, xreg = Ren_ts_TP, seasonal = TRUE)
+forecast_biomass_TP <- forecast(arima_biomass_TP, h = 12, xreg = future_TP)
+```
+
+```{r Ren_accuarcy, echo=FALSE, message=FALSE, warning=FALSE}
+Ren_auto <- accuracy(forecast_biomass_Ren$mean,last_obs) 
+Ren_biomassT <- accuracy(forecast_biomass_T$mean,last_obs) 
+Ren_biomassTN <- accuracy(forecast_biomass_TN$mean,last_obs) 
+Ren_biomassTP <- accuracy(forecast_biomass_TP$mean,last_obs) 
+
+Ren_scores <- as.data.frame(rbind(Ren_auto, Ren_biomassT, Ren_biomassTN,Ren_biomassTP))
+row.names(Ren_scores) <- c("SARIMA", "Temperature","TN","TP")
+#Table
+kbl(Ren_scores, 
+      caption = "Forecast Accuracy for Explanatory Variable",
+      digits = array(4,ncol(Ren_scores))) %>%
+  kable_styling(full_width = FALSE, position = "center") %>%
+  #highlight model with lowest RMSE
+  kable_styling(latex_options="striped", stripe_index = which.min(seas_scores[,"RMSE"]))
+#figure
+autoplot(ts_biomass_data) +
+  autolayer(forecast_biomass_Ren$mean, PI=FALSE, series="SARIMA") +
+  autolayer(forecast_biomass_T$mean, PI=FALSE, series="Temperature") +
+  autolayer(forecast_biomass_TN$mean,PI=FALSE, series="TN") +
+  autolayer(forecast_biomass_TP$mean, series="TP") + 
+  xlab("Month") + ylab("biomass") +
+  guides(colour=guide_legend(title="Forecast"))
+
+```
+
+
 
 
 

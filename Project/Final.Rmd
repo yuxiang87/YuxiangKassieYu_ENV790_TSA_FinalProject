@@ -3,13 +3,13 @@ title: 'TSA FINAL REPORT:'
 author: "Yuxiang_Ren"
 date: "Spring 2023"
 output:
-  html_document:
-    toc: yes
-    df_print: paged
   pdf_document:
     toc: yes
     includes:
       in_header: header.tex
+  html_document:
+    toc: yes
+    df_print: paged
 csl: "apa-6th-edition.csl"
 bibliography: reference.bib
 link-citations: yes
@@ -37,8 +37,13 @@ library(kableExtra)
 ```
 
 ## Abstract
-
+\newpage
 ## Introduction
+Algae bloom, also known as harmful algal blooms (HABs), occurs when there is an excessive growth of phytoplankton in a waterbody. This overgrowth can be caused by various factors, including agriculture, which contributes to the development of HABs in several ways. Agricultural practices such as nutrient runoff from excessive fertilizer use, soil erosion from unsustainable practices, livestock waste management, aquaculture, and inefficient irrigation systems can all lead to increased levels of nitrogen and phosphorus in nearby waterbodies.
+
+Damage from harmful algal blooms (HABs) significantly impacts the environment and human life in various ways. These consequences include creating dead zones where aquatic life cannot survive due to oxygen depletion, disrupting the natural balance of aquatic ecosystems and leading to biodiversity loss, contaminating drinking water supplies with toxins that pose health risks, and affecting recreational water activities. Moreover, HABs have economic repercussions on industries dependent on clean water, such as commercial fishing, aquaculture, and tourism, leading to financial losses and negatively impacting local economies. 
+
+Therefore, predicting and providing early warnings for harmful algal blooms (HABs) has become increasingly important. Governments in many regions have started to monitor relevant data to establish early warning systems for HAB occurrences. Lakes that adopt water quality-based early warning mechanisms tend to have a greater potential to predict HAB events in advance compared to those relying on biomass or remote sensing images. In this study, we aim to predict algal populations in lakes using time series analysis methods and identify the most suitable forecasting model. By analyzing historical data and examining trends, we hope to better understand the factors influencing algal growth and develop effective strategies for predicting and managing harmful algal blooms.
 
 ## Method (Data Processing)
 
@@ -53,7 +58,7 @@ Three datasets used in the project were collected from EDI Data Portal, includin
 The three files respectively record the water body phytoplankton information, physical information and chemical information of multiple lakes in the Wisconsin range. We analyzed these data at the beginning stage to screen out suitable research subjects, including the target lake, and primary algae responsible for blooms. First, we chose Mendota Lake (ME) for this project, as it has more time measurement data compared to other lakes, which might be more conducive to time series analysis and obtaining more reliable results (Table 1). Second, to obtain information on dominant species that may cause water blooms, we accumulated the biomass of algae from different divisions and considered the algae with the highest total biomass to be the main contributor to water bloom outbreaks. It is worth noting that the original data records the biomass of specific algal species on the observation day. Therefore, to obtain division-level data, we summed the biomass of all species within the same division on the same day to obtain the biomass information for the division. The result shows that the dominant division is Cyanophyta, which is also consistent with other studies (Table 2)[@Mendota1][@Mendota2].
 
 ```{r Data1, echo=FALSE, message=FALSE, warning=FALSE}
-phyto <- read.csv(file = "./Data/Phyto_raw_2.csv")
+phyto <- read.csv(file = "./Data/Phyto_raw.csv")
 phyto$sampledate <- ymd(phyto$sampledate)
 rawdata <- phyto
 site_date_info <- rawdata %>%

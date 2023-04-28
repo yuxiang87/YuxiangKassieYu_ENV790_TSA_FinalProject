@@ -410,7 +410,7 @@ plot(SARIMA_for_new)
 ```
 
 \newpage
-## Result (2) env-biomass
+## Result (2) env-biomass Kexin
 
 ```{r Ren_TSA_data, include=FALSE}
 biomass_env
@@ -465,7 +465,14 @@ kbl(Ren_scores,
   kable_styling(full_width = FALSE, position = "center") %>%
   #highlight model with lowest RMSE
   kable_styling(latex_options="striped", stripe_index = which.min(seas_scores[,"RMSE"]))
-
+#figure
+autoplot(ts_biomass_data) +
+  autolayer(forecast_biomass_Ren$mean, PI=FALSE, series="SARIMA") +
+  autolayer(forecast_biomass_T$mean, PI=FALSE, series="Temperature") +
+  autolayer(forecast_biomass_TN$mean,PI=FALSE, series="TN") +
+  autolayer(forecast_biomass_TP$mean, series="TP") + 
+  xlab("Month") + ylab("biomass") +
+  guides(colour=guide_legend(title="Forecast"))
 
 ```
 

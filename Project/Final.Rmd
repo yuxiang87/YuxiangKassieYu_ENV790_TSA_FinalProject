@@ -48,15 +48,14 @@ Among the five models evaluated, the SARIMA model demonstrated the highest accur
 
 ## Introduction
 
-Algae bloom, also known as harmful algal blooms (HABs), occurs when there is an excessive growth of phytoplankton in a water body. This overgrowth can be caused by various factors, including agriculture, which contributes to the development of HABs in several ways. Agricultural practices such as nutrient runoff from excessive fertilizer use, soil erosion from unsustainable practices, livestock waste management, aquaculture, and inefficient irrigation systems can all lead to increased levels of nitrogen and phosphorus in nearby water bodies.
+Algae bloom, also known as harmful algal blooms (HABs), occurs when there is an excessive growth of phytoplankton in a water body. This overgrowth can be caused by various factors, including agriculture, which contributes to the development of HABs in several ways. Agricultural practices such as nutrient runoff from excessive fertilizer use, soil erosion from unsustainable practices, livestock waste management, aquaculture, and inefficient irrigation systems can all lead to increased levels of nitrogen and phosphorus in nearby water bodies [@fertilizer].
 
-Damage from harmful algal blooms (HABs) significantly impacts the environment and human life in various ways. These consequences include creating dead zones where aquatic life cannot survive due to oxygen depletion, disrupting the natural balance of aquatic ecosystems and leading to biodiversity loss, contaminating drinking water supplies with toxins that pose health risks, and affecting recreational water activities. Moreover, HABs have economic repercussions on industries dependent on clean water, such as commercial fishing, aquaculture, and tourism, leading to financial losses and negatively impacting local economies.
+Damage from harmful algal blooms (HABs) significantly impacts the environment and human life in various ways. These consequences include creating dead zones where aquatic life cannot survive due to oxygen depletion, disrupting the natural balance of aquatic ecosystems and leading to biodiversity loss, contaminating drinking water supplies with toxins that pose health risks, and affecting recreational water activities [@deadzones]. Moreover, HABs have economic repercussions on industries dependent on clean water, such as commercial fishing, aquaculture, and tourism, leading to financial losses and negatively impacting local economies [@drinkwater].
 
 Therefore, predicting and providing early warnings for harmful algal blooms (HABs) has become increasingly important. Governments in many regions have started to monitor relevant data to establish early warning systems for HAB occurrences. Lakes that adopt water quality-based early warning mechanisms tend to have a greater potential to predict HAB events in advance compared to those relying on biomass or remote sensing images. In this study, we aim to predict algal populations in lakes using time series analysis methods and identify the most suitable forecasting model. By analyzing historical data and examining trends, we hope to better understand the factors influencing algal growth and develop effective strategies for predicting and managing harmful algal blooms.
 
 ## Data Processing
 
-> **Data**
 
 Three datasets used in the project were collected from EDI Data Portal, including:
 
@@ -114,9 +113,9 @@ kable(biomass_env[c(1:5),],
       caption = "Final Data")
 ```
 
-## Result 
+## Results 
 
-### (1) Auto-regression
+> **Result1 Auto-regression**
 
 Original (1996-2020)
 
@@ -433,7 +432,7 @@ plot(SARIMA_for_new)
 
 \newpage
 
-### (2) Exogenous Variables: Temperature, TN and TP
+ **Result2 Exogenous Variables: Temperature, TN and TP**
 
 ```{r Ren_TSA_data, include=FALSE}
 biomass_env
@@ -516,6 +515,7 @@ According to Table 7, in terms of Mean Error (ME), none of the three new models 
 
 Figure X shows forecast results of different models. Consistent with the accuracy metrics, temperature and TN improved the performance of the original SARIMA model, especially its ability to forecast the peak in 2020. Also, adding temperature improved the prediction of low values. In contrast, adding TP significantly worsened the model\'s overall accuracy, as it only focuses on the peaks.
 
+\newpage
 ## Discussion
 
 Of the five different models we tried, the SARIMA model performed best in terms of accuracy. To further explore how exogenous variables could improve the performance of the model, we tried adding temperature, TN, and TP to the model, and temperature and TN slightly improved the performance of the original model. Specifically, adding temperature improved the original model's ability to handle extreme variation, as reflected by a lower RMSE.

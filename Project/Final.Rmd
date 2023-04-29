@@ -112,6 +112,7 @@ kable(biomass_env[c(1:5),],
       caption = "Final Data")
 ```
 
+\newpage
 ## Results
 
 ### (1) Auto-regression
@@ -599,5 +600,5 @@ There are several outstanding limitations of our study. First, we only added one
 Therefore, the improvement from adding exogenous variables could be significantly smaller than our results, given the difficulty in accurately forecasting these exogenous variables. From our perspective, given that improvement is still quite subtle even using the real observed data, sticking to auto-regression may be a simpler and more economical option in real-world forecasting.
 
 
-
+\newpage
 ## Reference

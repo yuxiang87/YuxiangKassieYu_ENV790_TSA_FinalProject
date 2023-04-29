@@ -579,7 +579,7 @@ autoplot(ts_biomass_data) +
   autolayer(forecast_biomass_T$mean, PI=FALSE, series="Temperature") +
   autolayer(forecast_biomass_TN$mean,PI=FALSE, series="TN") +
   autolayer(forecast_biomass_TP$mean, series="TP") + 
-  xlab("Month") + ylab("biomass") +
+  xlab("Year") + ylab("Total Biomass (g/m2)") +
   guides(colour=guide_legend(title="Forecast"))
 
 ```

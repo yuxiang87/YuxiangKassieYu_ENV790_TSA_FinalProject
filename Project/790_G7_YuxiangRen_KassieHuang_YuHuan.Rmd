@@ -600,21 +600,5 @@ There are several outstanding limitations of our study. First, we only added one
 Therefore, the improvement from adding exogenous variables could be significantly smaller than our results, given the difficulty in accurately forecasting these exogenous variables. From our perspective, given that improvement is still quite subtle even using the real observed data, sticking to auto-regression may be a simpler and more economical option in real-world forecasting.
 
 
-***Individual contributions to this report***
-
-*Abstract: Kassie*
-
-*Introduction: Yuxiang*
-
-*Data Processing: Yuxiang*
-
-*Result-Autoregression: Yu (coding), Yuxiang (formatting and git support)*
-
-*Result-Exogenous variables: Yuxiang (coding), Kassie (literature & writing)*
-
-*Discussion: Kassie*
-
-*Reference (and knitting, etc.): Yuxiang*
-
 \newpage
 ## Reference

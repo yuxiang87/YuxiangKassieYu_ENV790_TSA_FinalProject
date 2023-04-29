@@ -56,7 +56,6 @@ Therefore, predicting and providing early warnings for harmful algal blooms (HAB
 
 ## Data Processing
 
-
 Three datasets used in the project were collected from EDI Data Portal, including:
 
 1.  North Temperate Lakes LTER: Phytoplankton - Madison Lakes Area 1995 -- current;[@Phytoplankton_data]
@@ -113,7 +112,7 @@ kable(biomass_env[c(1:5),],
       caption = "Final Data")
 ```
 
-## Results 
+## Results
 
 ### (1) Auto-regression
 
@@ -178,10 +177,7 @@ PACF_Plot <- Pacf(ts_biomass_data, lag = 40, plot = TRUE,main="")
 
 ```
 
-
-It can be seen that there are both clear trend and seasonal components in this plot. 
-The decomposition of the time series is shown as follows:
-
+It can be seen that there are both clear trend and seasonal components in this plot. The decomposition of the time series is shown as follows:
 
 ```{r}
 #Plot ts decompose
@@ -189,8 +185,6 @@ decompose_biomass_data <- decompose(ts_biomass,"additive")
 
 plot(decompose_biomass_data)
 ```
-
-
 
 Given the complexity of the series, we further try five models to fit the model and conduct forecasting.
 
@@ -241,9 +235,7 @@ plot(SS_for)
 
 ```
 
-
 Based on the residual analysis plots, SARIMA, Exponential smoothing, and BSM shows better distribution in residuals with a near-random distribution and, most points inside the ACF confidence interval without seasonality. However, it is not intuitive which model is the best by simply observing the plots. We further conduct set of rigorous accuracy tests for each model by comparing the forecasted value in the last year which is 2020 with the observed value. The result of the accuracy test is conducted as follows:
-
 
 ```{r}
 
@@ -265,9 +257,7 @@ SS_scores <- accuracy(SS_for$mean,last_obs)
 
 ```
 
-
 To present the accuracy result in a comparable way, I created a compare performance metrics to select the model with the lowest RMSE in Table 5.
-
 
 ```{r}
 
@@ -294,7 +284,6 @@ Based on highlighted lowest RMSE in the compare performance metrics, the model w
 
 To visually compare the result of forecasts using different models, we further jointly plot the forecast generated using five models and compare them with the actual observed value. The plot is shown as follows:
 
-
 ```{r}
 autoplot(ts_biomass_data) +
   autolayer(MEAN_seas, PI=FALSE, series="Mean") +
@@ -308,7 +297,6 @@ autoplot(ts_biomass_data) +
 
 ```
 
-
 From the plot, we can see the SARIMA is the one with the closest forecasted value to the actual observation. If we only plot the actual value and the forecasted value using our outperforming model, SARIMA is shown as follows:
 
 ```{r}
@@ -319,7 +307,6 @@ autolayer(SARIMA_for,PI=FALSE, series="SARIMA") +
   guides(colour=guide_legend(title="Forecast"))
 
 ```
-
 
 Then, we use our selected SARIMA model to conduct the forecast for the year 2021 using the full sample. The residual plot general shows random and most of the values are within the confidence interval of the ACF plot. The parameter of the fitted SARIMA model is ARIMA(0,1,2)(0,0,1). The forecast plot with a confidence interval of 95% for 2021 is shown as follows:
 
@@ -339,9 +326,7 @@ The predicted value for the year 2021 is presented as follows:
 print(SARIMA_for_new$mean)
 ```
 
-
 From the original plot of the biomass at the beginning, it seems to start to show a slightly different pattern since 2010. In order to make sure our forecast is not biased by some sudden changes in the previous old years. To be prudent, we further limit our sample to the recent ten years. We use samples from 2010 to 2020 to predict again. All the procedures are the same as the above full sample analysis only by changing the time span to the recent 10 years.
-
 
 ```{r}
 # Change the time span
@@ -383,7 +368,6 @@ decompose_biomass_data <- decompose(ts_biomass,"additive")
 plot(decompose_biomass_data)
 
 ```
-
 
 The ACF and PACF plot pattern show similar to previous We still use those five models to fit the data. The fitting process and forecast plot is shown as follows:
 
@@ -513,12 +497,28 @@ print(SARIMA_for_new$mean)
 
 ```
 
-
 Therefore, for the single variable time series forecast, we use the SARIMA model to fit which is robust even change our time span to the recent ten years. We get our predicted value from SARIMA in a consistent manner.
 
 \newpage
 
- **Result2 Exogenous Variables: Temperature, TN and TP**
+### (2) Exogenous Variables: Temperature, TN and TP
+
+Other than biomass itself, that there may be exogenous variables that also influence phytoplankton biomass, and incorporating these variables into the model could potentially improve our ability to forecast the phytoplankton biomass. Therefore, we searched the existing literature to identify key variables.
+
+As shown in the table 7 below, it appears that temperature, nitrogen, and phosphorus appear throughout the literature. In terms of the mechanism by which they affect phytoplankton biomass, the three variables fall into two groups: First, temperature affects the metabolic rates of organisms. As temperature increases, the metabolic rates of phytoplankton and their predators increase at different rates and reach their growth optima at different times. Second, phytoplankton growth is often limited by nutrient availability. Nitrogen (N) and phosphorus (P) are the two such nutrients, so increasing TN and TP could lead to increased phytoplankton growth rates and hence their biomass.
+
+| Author                                | Key findings                                                                                                                                                                                                                              |
+|---------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Yuan and Pollard [@Yuan2018]          | The mean biomass of zooplankton individuals was best predicted by physical lake characteristics such as geographic location, mean annual temperature, affecting the relationship between zooplankton (Z) and phytoplankton (P) biomasses. |
+| Borics et al. [@Borics2013]           | By incorporating lake depth, TP, TN and lake use as independent and Chl-a as dependent variables into different models, the predictive models explained 50% of the variance.                                                              |
+| Cai et al. [@Cai2012]                 | Multiple stepwise linear regression revealed that EAWT, dissolved total phosphorus (DTP), and TP explained 99.2% of the variation of Chl-a in Meiliang Bay.                                                                               |
+| Burgmer and Hillebrand [@Burgmer2011] | Altered temperature regimes strongly aﬀected algal biomass and diversity by interdependently altering competitive and consumer interactions.                                                                                              |
+
+: **Literature Review**
+
+Therefore, we added the three variables individually to the best performing model, i.e. SARIMA, to see if the model performance would be improved accordingly. Table 8 shows the forecast accuracy of adding each explanatory variables, where the first row shows the accuracy of the original SARIMA model, and the following rows show the accuracy of the new models with one exogenous variable added.
+
+According to Table 8, in terms of Mean Error (ME), none of the three new models improved the performance, but worsened it. On the other hand, adding temperature helped to slightly improve the model's accuracy in all other metrics (RMSE, MAE, MPE, and MAPE), and adding TN slightly improved the model's accuracy in terms of MPE and MAPE.
 
 ```{r Ren_TSA_data, include=FALSE}
 biomass_env
@@ -584,24 +584,10 @@ autoplot(ts_biomass_data) +
 
 ```
 
-Other than biomass itself, that there may be exogenous variables that also influence phytoplankton biomass, and incorporating these variables into the model could potentially improve our ability to forecast the phytoplankton biomass. Therefore, we searched the existing literature to identify key variables.
-
-As shown in the table below, it appears that temperature, nitrogen, and phosphorus appear throughout the literature. In terms of the mechanism by which they affect phytoplankton biomass, the three variables fall into two groups: First, temperature affects the metabolic rates of organisms. As temperature increases, the metabolic rates of phytoplankton and their predators increase at different rates and reach their growth optima at different times. Second, phytoplankton growth is often limited by nutrient availability. Nitrogen (N) and phosphorus (P) are the two such nutrients, so increasing TN and TP could lead to increased phytoplankton growth rates and hence their biomass.
-
-| Author                                | Year | Key findings                                                                                                                                                                                                                              |
-|----------------|--------|-------------------------------------------------|
-| Yuan and Pollard [@Yuan2018]          | 2018 | The mean biomass of zooplankton individuals was best predicted by physical lake characteristics such as geographic location, mean annual temperature, affecting the relationship between zooplankton (Z) and phytoplankton (P) biomasses. |
-| Borics et al. [@Borics2013]           | 2013 | By incorporating lake depth, TP, TN and lake use as independent and Chl-a as dependent variables into different models, the predictive models explained 50% of the variance.                                                              |
-| Cai et al. [@Cai2012]                 | 2012 | Multiple stepwise linear regression revealed that EAWT, dissolved total phosphorus (DTP), and TP explained 99.2% of the variation of Chl-a in Meiliang Bay.                                                                               |
-| Burgmer and Hillebrand [@Burgmer2011] | 2011 | Altered temperature regimes strongly aﬀected algal biomass and diversity by interdependently altering competitive and consumer interactions.                                                                                              |
-
-: Therefore, we added the three variables individually to the best performing model, i.e. SARIMA, to see if the model performance would be improved accordingly. Table 7 shows the forecast accuracy of adding each explanatory variables, where the first row shows the accuracy of the original SARIMA model, and the following rows show the accuracy of the new models with one exogenous variable added.
-
-According to Table 7, in terms of Mean Error (ME), none of the three new models improved the performance, but worsened it. On the other hand, adding temperature helped to slightly improve the model's accuracy in all other metrics (RMSE, MAE, MPE, and MAPE), and adding TN slightly improved the model's accuracy in terms of MPE and MAPE.
-
-Figure X shows forecast results of different models. Consistent with the accuracy metrics, temperature and TN improved the performance of the original SARIMA model, especially its ability to forecast the peak in 2020. Also, adding temperature improved the prediction of low values. In contrast, adding TP significantly worsened the model\'s overall accuracy, as it only focuses on the peaks.
+Figure above shows forecast results of different models. Consistent with the accuracy metrics, temperature and TN improved the performance of the original SARIMA model, especially its ability to forecast the peak in 2020. Also, adding temperature improved the prediction of low values. In contrast, adding TP significantly worsened the model's overall accuracy, as it only focuses on the peaks.
 
 \newpage
+
 ## Discussion
 
 Of the five different models we tried, the SARIMA model performed best in terms of accuracy. To further explore how exogenous variables could improve the performance of the model, we tried adding temperature, TN, and TP to the model, and temperature and TN slightly improved the performance of the original model. Specifically, adding temperature improved the original model's ability to handle extreme variation, as reflected by a lower RMSE.
@@ -612,6 +598,20 @@ There are several outstanding limitations of our study. First, we only added one
 
 Therefore, the improvement from adding exogenous variables could be significantly smaller than our results, given the difficulty in accurately forecasting these exogenous variables. From our perspective, given that improvement is still quite subtle even using the real observed data, sticking to auto-regression may be a simpler and more economical option in real-world forecasting.
 
+***Individual contributions to this report***
+
+*Abstract: Kassie*
+
+*Introduction: Yuxiang*
+
+*Data Processing: Yuxiang*
+
+*Result-Autoregression: Yu (coding), Yuxiang (formatting and git support)*
+
+*Result-Exogenous variables: Yuxiang (coding), Kassie (literature & writing)*
+
+*Discussion: Kassie*
+
+*Reference (and knitting, etc.): Yuxiang*
+
 ## Reference
-
-

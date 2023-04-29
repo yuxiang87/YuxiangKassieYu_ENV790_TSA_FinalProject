@@ -241,7 +241,7 @@ plot(SS_for)
 ```
 
 
-Based on the residuals analysis plots, SARIMA, Exponential smoothing, and BSM shows better distribution in residuals with a near-random distribution and, most points inside the ACF confidence interval without seasonality. However, it is not intuitive which model is the best by simply observing the plots. We further conduct set of rigorous accuracy tests for each model by comparing the forecasted value in the last year which is 2020 with the observed value. The result of the accuracy test is conducted as follows:
+Based on the residual analysis plots, SARIMA, Exponential smoothing, and BSM shows better distribution in residuals with a near-random distribution and, most points inside the ACF confidence interval without seasonality. However, it is not intuitive which model is the best by simply observing the plots. We further conduct set of rigorous accuracy tests for each model by comparing the forecasted value in the last year which is 2020 with the observed value. The result of the accuracy test is conducted as follows:
 
 
 ```{r}
@@ -301,7 +301,7 @@ autoplot(ts_biomass_data) +
   autolayer(SARIMA_for,PI=FALSE, series="SARIMA") +
   autolayer(SSES_seas$forecast, series="SSES") +
   autolayer(SS_for,PI=FALSE,series="BSM") + 
-  xlab("Month") + ylab("Electricity Retail Price ($/kWh)") +
+  xlab("Month") + ylab("Total Biomass (g/m2)") +
   guides(colour=guide_legend(title="Forecast"))
 
 
@@ -477,7 +477,7 @@ autoplot(ts_biomass_data) +
   autolayer(SARIMA_for,PI=FALSE, series="SARIMA") +
   autolayer(SSES_seas$forecast, series="SSES") +
   autolayer(SS_for,PI=FALSE,series="BSM") + 
-  xlab("Month") + ylab("Electricity Retail Price ($/kWh)") +
+  xlab("Month") + ylab("Total Biomass (g/m2)") +
   guides(colour=guide_legend(title="Forecast"))
 
 

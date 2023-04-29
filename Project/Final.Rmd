@@ -165,7 +165,8 @@ last_obs <- ts_biomass_data[289:300]
 
 
 TS_Plot <- ggplot(biomass_data_frame, aes(x=Month, y=Biomass)) +
-      geom_line()
+      geom_line() + 
+  xlab("Month") + ylab("Total Biomass (g/m2)")
 
 plot(TS_Plot)
 
@@ -365,7 +366,8 @@ last_obs <- ts_biomass_data[121:132]
 
 
 TS_Plot <- ggplot(biomass_data_frame[169:300,], aes(x=Month, y=Biomass)) +
-      geom_line()
+      geom_line() + 
+  xlab("Month") + ylab("Total Biomass (g/m2)")
 
 plot(TS_Plot)
 
